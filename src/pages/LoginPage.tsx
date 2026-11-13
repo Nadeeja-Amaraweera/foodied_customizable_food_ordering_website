@@ -40,12 +40,8 @@ const SLIDES: SlideItem[] = [
 ];
 
 export const LoginPage: React.FC<LoginPageProps> = ({
-  onLogin,
-  onForgotPassword,
   onRegister,
   onBackToHome,
-  onSocialLogin,
-  onToast
 }) => {
   // Form State
   const [username, setUsername] = useState('');
@@ -77,80 +73,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     };
   }, [isHovered]);
 
-  // Form Validation & Submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (isLoading) return;
-
-    const newErrors: { username?: string; password?: string } = {};
-
-    if (!username.trim()) {
-      newErrors.username = 'Please enter your username.';
-    }
-
-    if (!password) {
-      newErrors.password = 'Please enter your password.';
-    } else if (password.length < 4) {
-      newErrors.password = 'Password must be at least 4 characters.';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setErrors({});
-    setIsLoading(true);
-
-    try {
-      if (onLogin) {
-        await onLogin({ username: username.trim(), password });
-      } else {
-        // Fallback default simulation when no custom handler is passed
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        if (onToast) {
-          onToast(`Welcome back, ${username.trim()}!`);
-        }
-      }
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Invalid credentials. Please try again.';
-      setErrors({ general: errorMsg });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSocialClick = (provider: 'google' | 'facebook') => {
-    if (onSocialLogin) {
-      onSocialLogin(provider);
-      return;
-    }
-    // Per requirements: Do not implement fake authentication.
-    const providerName = provider === 'google' ? 'Google' : 'Facebook';
-    const message = `${providerName} login is not configured yet for this project.`;
-    if (onToast) {
-      onToast(message);
-    } else {
-      setErrors((prev) => ({ ...prev, general: message }));
-    }
-  };
 
   const handleForgotClick = () => {
-    if (onForgotPassword) {
-      onForgotPassword();
-    } else if (onToast) {
-      onToast('Password recovery instructions sent to your email.');
-    }
-  };
+    console.log("Forgot password clicked")
+  }
 
   const handleRegisterClick = () => {
-    if (onRegister) {
-      onRegister();
-    } else if (onToast) {
-      onToast('Registration service will be available shortly.');
-    }
-  };
+    onRegister?.();
+  }
+
+  const handleSubmit = () => {
+    console.log("Login clicked")
+  }
+
+  const handleSocialClick = () => {
+    console.log("Social clicked")
+  }
 
   return (
     <div className="min-h-screen w-full bg-[#EFEFEF] flex items-center justify-center p-3 sm:p-5 lg:p-7 py-8 sm:py-6 relative select-none selection:bg-neutral-900 selection:text-white">
@@ -169,11 +107,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       {/* Main Login White Container (Exact match to reference proportions: ~967px x 626px) */}
       <div className="w-full max-w-[968px] min-h-[580px] lg:h-[626px] bg-white rounded-[26px] sm:rounded-[28px] shadow-[0_15px_45px_-10px_rgba(0,0,0,0.06)] border border-gray-100/60 p-5 sm:p-6 lg:p-0 lg:pr-[28px] lg:pt-[28px] lg:pb-[28px] overflow-hidden flex flex-col justify-between my-auto">
         <div className="flex flex-col lg:flex-row items-stretch justify-between h-full gap-6 lg:gap-0">
-          
+
           {/* Left Side: Login Form (Width matched to ~272px, centered in the left column with exact reference alignment) */}
           <div className="flex-1 flex flex-col justify-between pt-4 pb-3 lg:pt-6 lg:pb-3 px-0">
             <div className="w-full max-w-[272px] mx-auto">
-              
+
               {/* Header: Welcome Back! */}
               <div className="text-center">
                 <h1 className="text-[26px] sm:text-[28px] font-bold tracking-tight text-[#111111]">
@@ -205,11 +143,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     placeholder="Username"
                     autoComplete="username"
                     disabled={isLoading}
-                    className={`w-full h-[36px] sm:h-[38px] px-4 rounded-full border text-[12px] text-gray-800 placeholder-gray-400 bg-white transition-all duration-150 focus:outline-none ${
-                      errors.username
-                        ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-100'
-                        : 'border-gray-200/90 hover:border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-200'
-                    } disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                    className={`w-full h-[36px] sm:h-[38px] px-4 rounded-full border text-[12px] text-gray-800 placeholder-gray-400 bg-white transition-all duration-150 focus:outline-none ${errors.username
+                      ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-100'
+                      : 'border-gray-200/90 hover:border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-200'
+                      } disabled:bg-gray-50 disabled:cursor-not-allowed`}
                   />
                   {errors.username && (
                     <p className="text-[10px] text-red-500 mt-1 pl-3 font-medium">{errors.username}</p>
@@ -229,11 +166,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                       placeholder="Password"
                       autoComplete="current-password"
                       disabled={isLoading}
-                      className={`w-full h-[36px] sm:h-[38px] pl-4 pr-10 rounded-full border text-[12px] text-gray-800 placeholder-gray-400 bg-white transition-all duration-150 focus:outline-none ${
-                        errors.password
-                          ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-100'
-                          : 'border-gray-200/90 hover:border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-200'
-                      } disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                      className={`w-full h-[36px] sm:h-[38px] pl-4 pr-10 rounded-full border text-[12px] text-gray-800 placeholder-gray-400 bg-white transition-all duration-150 focus:outline-none ${errors.password
+                        ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-100'
+                        : 'border-gray-200/90 hover:border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-200'
+                        } disabled:bg-gray-50 disabled:cursor-not-allowed`}
                     />
                     <button
                       type="button"
@@ -292,7 +228,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   {/* Google Login Button with Official Google Icon */}
                   <button
                     type="button"
-                    onClick={() => handleSocialClick('google')}
+                    onClick={handleSocialClick}
                     className="w-full h-[36px] sm:h-[38px] rounded-full border border-gray-200/90 bg-white hover:bg-gray-50/80 active:scale-[0.99] transition-all duration-150 flex items-center justify-center gap-2 text-[11px] font-medium text-gray-700 shadow-2xs cursor-pointer"
                   >
                     <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
@@ -316,17 +252,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     <span>Login with Google</span>
                   </button>
 
-                  {/* Facebook Login Button with Official Facebook Icon */}
-                  <button
-                    type="button"
-                    onClick={() => handleSocialClick('facebook')}
-                    className="w-full h-[36px] sm:h-[38px] rounded-full border border-gray-200/90 bg-white hover:bg-gray-50/80 active:scale-[0.99] transition-all duration-150 flex items-center justify-center gap-2 text-[11px] font-medium text-gray-700 shadow-2xs cursor-pointer"
-                  >
-                    <svg className="w-3.5 h-3.5 shrink-0 text-[#1877F2] fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                    </svg>
-                    <span>Login with Facebook</span>
-                  </button>
                 </div>
               </form>
             </div>
@@ -356,9 +281,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               return (
                 <div
                   key={slide.id}
-                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                    isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-                  }`}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                    }`}
                 >
                   <img
                     src={slide.image}
@@ -387,11 +311,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     role="tab"
                     aria-selected={isActive}
                     aria-label={`Go to slide ${index + 1}`}
-                    className={`transition-all duration-300 rounded-full focus:outline-none ${
-                      isActive
-                        ? 'w-6 h-1.5 bg-white/95 shadow-sm'
-                        : 'w-1.5 h-1.5 bg-white/45 hover:bg-white/75'
-                    }`}
+                    className={`transition-all duration-300 rounded-full focus:outline-none ${isActive
+                      ? 'w-6 h-1.5 bg-white/95 shadow-sm'
+                      : 'w-1.5 h-1.5 bg-white/45 hover:bg-white/75'
+                      }`}
                   />
                 );
               })}
