@@ -1,40 +1,51 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-
-import LoginPage from "../pages/LoginPage";
-
-import useAuth from "../hooks/useAuth";
 import { ReactNode } from "react";
+import { HomeScreen } from "../screens/HomeScreen";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+import useAuth from "../hooks/useAuth";
 
-type RequiredAuthProps = {
-    children: ReactNode
-    roles?: string[]
-}
+export type RequiredAuthProps = {
+  children: ReactNode;
+  roles?: string[];
+};
 
-const RequiredAuth = ({children,roles}:RequiredAuthProps)=>{
-    const {user,loading} = useAuth();
+export const RequiredAuth = ({ children, roles }: RequiredAuthProps) => {
+  const { user, loading } = useAuth();
 
-    if(loading){
-        return <div>Loading...</div>
-    }
-    if (!user) {
-        return <Navigate to={"/login"} replace/>
-    }
-    if (roles && !roles.some(role => user?.roles.includes(roles))) {
-        return <div>
-            <h1>
-                You do not have permission to access this page
-            </h1>
-        </div>
-    }
-}
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-sm font-semibold text-gray-500">
+        Loading...
+      </div>
+    );
+  }
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (roles && !roles.some((role) => user?.roles?.includes(role))) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <h1 className="text-lg font-bold text-gray-800">
+          You do not have permission to access this page
+        </h1>
+      </div>
+    );
+  }
+  return <>{children}</>;
+};
 
 function Router() {
-    return (
-        <BrowserRouter>
-        <Routes>
-            <Route path="/login" element={<LoginPage/>}/>
-            
-        </Routes>
-        </BrowserRouter>
-    )
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomeScreen />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
+export default Router;

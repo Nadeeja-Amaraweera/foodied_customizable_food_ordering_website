@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { register } from '../services/auth';
 
 interface RegisterPageProps {
   onRegister?: (details: { name: string; email: string; password: string }) => Promise<void> | void;
@@ -55,6 +57,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
   onLogin,
   onBackToHome
 }) => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -84,6 +87,22 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     if (errors[field]) setErrors((previous) => ({ ...previous, [field]: undefined }));
   };
 
+  const handleLoginClick = () => {
+    if (onLogin) {
+      onLogin();
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleBackHome = () => {
+    if (onBackToHome) {
+      onBackToHome();
+    } else {
+      navigate('/');
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (isLoading) return;
@@ -109,7 +128,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     setErrors({});
     setIsLoading(true);
     try {
-      await onRegister?.({ name: name.trim(), email: email.trim(), password });
+      if (onRegister) {
+        await onRegister({ name: name.trim(), email: email.trim(), password });
+      } else {
+        await register(name.trim(), email.trim(), password);
+        navigate('/login');
+      }
     } catch (error: unknown) {
       setErrors({
         general: error instanceof Error ? error.message : 'Registration failed. Please try again.'
@@ -121,16 +145,14 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
 
   return (
     <div className="min-h-screen w-full bg-[#EFEFEF] flex items-center justify-center p-3 sm:p-5 lg:p-7 py-8 sm:py-6 relative select-none selection:bg-neutral-900 selection:text-white">
-      {onBackToHome && (
-        <button
-          type="button"
-          onClick={onBackToHome}
-          className="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-black bg-white/70 hover:bg-white backdrop-blur-xs py-1.5 px-3.5 rounded-full shadow-xs transition-all duration-200"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Foodied</span>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={handleBackHome}
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-black bg-white/70 hover:bg-white backdrop-blur-xs py-1.5 px-3.5 rounded-full shadow-xs transition-all duration-200 cursor-pointer"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        <span>Back to Foodied</span>
+      </button>
 
       <div className="w-full max-w-[968px] min-h-[580px] lg:h-[626px] bg-white rounded-[26px] sm:rounded-[28px] shadow-[0_15px_45px_-10px_rgba(0,0,0,0.06)] border border-gray-100/60 p-5 sm:p-6 lg:p-0 lg:pr-[28px] lg:pt-[28px] lg:pb-[28px] overflow-hidden flex flex-col justify-between my-auto">
         <div className="flex flex-col lg:flex-row items-stretch justify-between h-full gap-6 lg:gap-0">
@@ -234,7 +256,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               <span>Already have an account?</span>{' '}
               <button
                 type="button"
-                onClick={onLogin}
+                onClick={handleLoginClick}
                 className="font-bold text-gray-900 hover:underline transition-colors ml-0.5 cursor-pointer"
               >
                 Login

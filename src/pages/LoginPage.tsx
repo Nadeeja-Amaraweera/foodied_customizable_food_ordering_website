@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { login } from '../services/auth';
+import useAuth from '../hooks/useAuth';
 
 export interface LoginPageProps {
   onLogin?: (credentials: { username: string; password: string }) => Promise<void> | void;
@@ -40,9 +43,16 @@ const SLIDES: SlideItem[] = [
 ];
 
 export const LoginPage: React.FC<LoginPageProps> = ({
+  onLogin,
+  onForgotPassword,
   onRegister,
   onBackToHome,
+  onSocialLogin,
+  onToast
 }) => {
+  const navigate = useNavigate();
+  const auth = useAuth();
+
   // Form State
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -73,36 +83,85 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     };
   }, [isHovered]);
 
-
   const handleForgotClick = () => {
-    console.log("Forgot password clicked")
-  }
+    if (onForgotPassword) {
+      onForgotPassword();
+    } else {
+      console.log('Forgot password clicked');
+    }
+  };
 
   const handleRegisterClick = () => {
-    onRegister?.();
-  }
+    if (onRegister) {
+      onRegister();
+    } else {
+      navigate('/register');
+    }
+  };
 
-  const handleSubmit = () => {
-    console.log("Login clicked")
-  }
+  const handleBackHome = () => {
+    if (onBackToHome) {
+      onBackToHome();
+    } else {
+      navigate('/');
+    }
+  };
 
-  const handleSocialClick = () => {
-    console.log("Social clicked")
-  }
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!username.trim() || !password) {
+      setErrors({
+        username: !username.trim() ? 'Username is required' : undefined,
+        password: !password ? 'Password is required' : undefined
+      });
+      return;
+    }
+
+    if (onLogin) {
+      await onLogin({ username, password });
+    } else {
+      try {
+        setIsLoading(true);
+        setErrors({});
+        const res = await login(username, password);
+        if (res?.token) {
+          localStorage.setItem('ACCESS_TOKEN', res.token);
+        }
+        if (auth?.setUser) {
+          auth.setUser(res?.user || { username, email: username });
+        }
+        onToast?.('Login successful!');
+        navigate('/');
+      } catch (err: any) {
+        setErrors((prev) => ({
+          ...prev,
+          general: err?.response?.data?.message || err?.message || 'Login failed. Please check your credentials.'
+        }));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleSocialClick = (provider: 'google' | 'facebook') => {
+    if (onSocialLogin) {
+      onSocialLogin(provider);
+    } else {
+      console.log('Social login clicked', provider);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#EFEFEF] flex items-center justify-center p-3 sm:p-5 lg:p-7 py-8 sm:py-6 relative select-none selection:bg-neutral-900 selection:text-white">
       {/* Floating Back to Store Button (subtle, does not distort container centering) */}
-      {onBackToHome && (
-        <button
-          type="button"
-          onClick={onBackToHome}
-          className="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-black bg-white/70 hover:bg-white backdrop-blur-xs py-1.5 px-3.5 rounded-full shadow-xs transition-all duration-200"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Foodied</span>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={handleBackHome}
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-black bg-white/70 hover:bg-white backdrop-blur-xs py-1.5 px-3.5 rounded-full shadow-xs transition-all duration-200 cursor-pointer"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        <span>Back to Foodied</span>
+      </button>
 
       {/* Main Login White Container (Exact match to reference proportions: ~967px x 626px) */}
       <div className="w-full max-w-[968px] min-h-[580px] lg:h-[626px] bg-white rounded-[26px] sm:rounded-[28px] shadow-[0_15px_45px_-10px_rgba(0,0,0,0.06)] border border-gray-100/60 p-5 sm:p-6 lg:p-0 lg:pr-[28px] lg:pt-[28px] lg:pb-[28px] overflow-hidden flex flex-col justify-between my-auto">
@@ -228,7 +287,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   {/* Google Login Button with Official Google Icon */}
                   <button
                     type="button"
-                    onClick={handleSocialClick}
+                    onClick={() => handleSocialClick('google')}
                     className="w-full h-[36px] sm:h-[38px] rounded-full border border-gray-200/90 bg-white hover:bg-gray-50/80 active:scale-[0.99] transition-all duration-150 flex items-center justify-center gap-2 text-[11px] font-medium text-gray-700 shadow-2xs cursor-pointer"
                   >
                     <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">

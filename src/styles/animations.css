@@ -1,0 +1,97 @@
+/* Custom Keyframe Animations for Floating Dishes & Garnishes */
+
+@keyframes dishFloatInSpring {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--float-start-x, 140px), var(--float-start-y, 120px), 0) scale(0.38) rotate(var(--float-start-rot, -22deg));
+    filter: blur(6px) drop-shadow(0 35px 35px rgba(0, 0, 0, 0.28));
+  }
+  55% {
+    opacity: 1;
+    transform: translate3d(calc(var(--float-start-x, 140px) * -0.07), calc(var(--float-start-y, 120px) * -0.07 - 12px), 0) scale(1.06) rotate(4deg);
+    filter: blur(0px) drop-shadow(0 28px 30px rgba(85, 139, 47, 0.32));
+  }
+  78% {
+    transform: translate3d(0px, 5px, 0) scale(0.98) rotate(-1.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0px, 0px, 0) scale(1) rotate(0deg);
+    filter: blur(0px) drop-shadow(0 20px 25px rgba(0, 0, 0, 0.16));
+  }
+}
+
+@keyframes zeroGravityBob {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-11px) rotate(1.6deg);
+  }
+}
+
+@keyframes garnishBurst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.2) rotate(0deg);
+  }
+  40% {
+    opacity: 1;
+    transform: translate3d(var(--tx, 30px), var(--ty, -30px), 0) scale(1.15) rotate(18deg);
+  }
+  100% {
+    opacity: 0.92;
+    transform: translate3d(var(--tx, 30px), calc(var(--ty, -30px) - 8px), 0) scale(1) rotate(32deg);
+  }
+}
+
+@keyframes modalDishFloatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(55px) scale(0.45) rotate(-16deg);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.07) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes flyToHeroArc {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  60% {
+    transform: translate3d(var(--fly-x, 260px), var(--fly-y, -320px), 0) scale(0.72) rotate(15deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(var(--target-x, 480px), var(--target-y, -680px), 0) scale(0.2) rotate(35deg);
+    opacity: 0;
+  }
+}
+
+.animate-dish-float-in {
+  animation: dishFloatInSpring 0.95s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+.animate-zero-gravity {
+  animation: zeroGravityBob 5.5s ease-in-out infinite;
+}
+
+.animate-garnish-particle {
+  animation: garnishBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-modal-dish-float {
+  animation: modalDishFloatIn 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-fly-to-hero {
+  animation: flyToHeroArc 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
