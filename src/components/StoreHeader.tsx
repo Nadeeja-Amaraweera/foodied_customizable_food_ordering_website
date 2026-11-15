@@ -1,5 +1,6 @@
 import React from 'react';
-import { Search, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingBag, Flame } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface StoreHeaderProps {
   searchQuery: string;
@@ -79,6 +80,15 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
           </span>
         )}
       </button>
+
+      <Link
+        to="/admin/dashboard"
+        className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#F7931E] text-white text-xs font-bold shadow-sm hover:scale-105 hover:shadow-md transition"
+        title="Go to Admin Dashboard"
+      >
+        <Flame className="w-3.5 h-3.5" />
+        <span>Admin</span>
+      </Link>
 
       {currentUser ? (
         <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-sm border border-gray-200/80 text-xs font-semibold text-gray-800">

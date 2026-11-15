@@ -5,6 +5,14 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import useAuth from "../hooks/useAuth";
 
+// Admin Pages
+import { AdminLoginPage } from "../pages/admin/AdminLoginPage";
+import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
+import { AdminIncomingOrdersPage } from "../pages/admin/AdminIncomingOrdersPage";
+import { AdminRecentOrdersPage } from "../pages/admin/AdminRecentOrdersPage";
+import { AdminProductsPage } from "../pages/admin/AdminProductsPage";
+import { AdminSettingsPage } from "../pages/admin/AdminSettingsPage";
+
 export type RequiredAuthProps = {
   children: ReactNode;
   roles?: string[];
@@ -39,16 +47,29 @@ function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={
-        <RequiredAuth>
-          <HomeScreen />
-        </RequiredAuth>
-          } />
-
-          
+        {/* Customer Facing Routes */}
+        <Route
+          path="/"
+          element={
+            <RequiredAuth>
+              <HomeScreen />
+            </RequiredAuth>
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+
+        {/* Admin Dashboard Routes */}
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+        <Route path="/admin/orders/incoming" element={<AdminIncomingOrdersPage />} />
+        <Route path="/admin/orders/recent" element={<AdminRecentOrdersPage />} />
+        <Route path="/admin/products" element={<AdminProductsPage />} />
+        <Route path="/admin/settings" element={<AdminSettingsPage />} />
+
+        {/* Catch-all redirect to Admin Login or Home */}
+        <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
