@@ -5,7 +5,7 @@ export const login = async (email:string, password:string) => {
         email,
         password
     })
-    return res.data
+    return res.data.data
 }
 
 export const register = async (name:string, email:string, password:string) => {

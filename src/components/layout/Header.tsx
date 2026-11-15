@@ -84,9 +84,11 @@ export const Header: React.FC<HeaderProps> = ({
       {currentUser ? (
         <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-sm border border-gray-200/80 text-xs font-semibold text-gray-800">
           <span className="w-5 h-5 rounded-full bg-[#8BC34A] text-white flex items-center justify-center text-[10px] font-black uppercase">
-            {currentUser.username[0]}
-          </span>
-          <span className="max-w-[100px] truncate">{currentUser.username}</span>
+      {currentUser.email?.[0]?.toUpperCase() || "U"}
+    </span>
+    <span className="max-w-[100px] truncate">
+      {currentUser.email?.split('@')[0] || "User"}
+    </span>
           <button
             onClick={onLogout}
             className="text-gray-400 hover:text-red-500 text-[11px] font-normal underline ml-1 cursor-pointer"

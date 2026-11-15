@@ -54,7 +54,9 @@ export type FloatingClone = {
 };
 
 export type User = {
-  username: string;
-  email?: string;
+    _id: string;
+  email: string;
+  roles: string[];
+  username?: string;
 };
 

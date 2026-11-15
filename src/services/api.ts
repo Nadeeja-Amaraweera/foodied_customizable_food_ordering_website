@@ -19,16 +19,36 @@ api.interceptors.request.use((config) => {
     return config;
 })
 
+// Access Token expier after get new Access Token with using Refresh token
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem("ACCESS_TOKEN");
-            // window.location.href = "/login";
-        }
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config
 
-        return Promise.reject(error);
+    if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true
+
+        const refreshToken = localStorage.getItem('REFRESH_TOKEN');
+
+        if(refreshToken){
+            try {
+                
+                const res = await api.post('/auth/refresh',{refreshToken})
+
+                const newAccessToken = res.data.data.access_token
+
+                localStorage.setItem("ACCESS_TOKEN", newAccessToken)
+
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+                return api(originalRequest)
+
+            } catch (refreshError) {
+                localStorage.removeItem("ACCESS_TOKEN");
+                localStorage.removeItem("REFRESH_TOKEN");
+            }
+        }
     }
-)
+  }
+);
 
 export default api

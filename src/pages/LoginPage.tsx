@@ -53,6 +53,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const navigate = useNavigate();
   const auth = useAuth();
 
+
   // Form State
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -139,8 +140,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
         const res = await login(username, password);
 
-        const token = res.data.access_token;
-        const refreshToken = res.data.refresh_token
+        const token = res.access_token;
+        const refreshToken = res.refresh_token
         if (token) {
           localStorage.setItem('ACCESS_TOKEN', token);
           localStorage.setItem('REFRESH_TOKEN', refreshToken)
@@ -148,12 +149,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
 
         if (auth?.setUser) {
-          auth.setUser(res?.user || { username, email: username });
+          auth.setUser({
+            _id: res.id,
+            email: res.email,
+            roles: res.roles,
+          });
+
         }
 
         showToast('Login successful!');
         navigate('/');
       } catch (err: any) {
+        console.error("Login Error:", err);
         const errorMessage = err?.response?.data?.message || 'Invalid email or password.';
         setErrors((prev) => ({
           ...prev,
