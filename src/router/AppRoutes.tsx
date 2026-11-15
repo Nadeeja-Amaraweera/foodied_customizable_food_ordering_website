@@ -39,9 +39,13 @@ function Router() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={
         <RequiredAuth>
-        <Route path="/" element={<HomeScreen />} />
+          <HomeScreen />
         </RequiredAuth>
+          } />
+
+          
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}

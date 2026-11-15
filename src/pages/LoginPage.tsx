@@ -59,11 +59,24 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ username?: string; password?: string; general?: string }>({});
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isErrorToast, setIsErrorToast] = useState(false);
 
   // Slider State
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const slideTimerRef = useRef<number | null>(null);
+
+  const showToast = (message: string, error = false) => {
+    if (onToast) {
+      onToast(message);
+      return;
+    }
+
+    setIsErrorToast(error);
+    setToastMessage(message);
+    window.setTimeout(() => setToastMessage(null), 3200);
+  };
 
   // Auto-slide effect (4.5s interval, pauses on hover)
   useEffect(() => {
@@ -123,20 +136,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       try {
         setIsLoading(true);
         setErrors({});
+
         const res = await login(username, password);
-        if (res?.token) {
-          localStorage.setItem('ACCESS_TOKEN', res.token);
+
+        const token = res.data.access_token;
+        const refreshToken = res.data.refresh_token
+        if (token) {
+          localStorage.setItem('ACCESS_TOKEN', token);
+          localStorage.setItem('REFRESH_TOKEN', refreshToken)
         }
+
+
         if (auth?.setUser) {
           auth.setUser(res?.user || { username, email: username });
         }
-        onToast?.('Login successful!');
+
+        showToast('Login successful!');
         navigate('/');
       } catch (err: any) {
+        const errorMessage = err?.response?.data?.message || 'Invalid email or password.';
         setErrors((prev) => ({
           ...prev,
-          general: err?.response?.data?.message || err?.message || 'Login failed. Please check your credentials.'
+          general: errorMessage
         }));
+        showToast(errorMessage, true);
       } finally {
         setIsLoading(false);
       }
@@ -326,6 +349,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 Register Now
               </button>
             </div>
+            {toastMessage && (
+              <div
+                role="alert"
+                className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-medium text-white ${
+                  isErrorToast ? 'bg-red-600' : 'bg-[#1A1A1A]'
+                }`}
+              >
+                {toastMessage}
+              </div>
+            )}
           </div>
 
           {/* Right Side: Image Slider (Exact dimensions ~411px x 570px on desktop, responsive on smaller screens) */}
