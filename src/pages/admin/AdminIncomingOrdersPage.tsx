@@ -18,7 +18,7 @@ import { OrderCard } from '../../components/admin/OrderCard';
 import { OrderDetailsModal } from '../../components/admin/OrderDetailsModal';
 import { Modal } from '../../components/admin/Modal';
 import { Button } from '../../components/admin/Button';
-import { adminApi } from '../../services/adminApi';
+// import { adminApi } from '../../services/adminApi';
 import { AdminOrder, OrderStatus } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
 
@@ -39,15 +39,15 @@ export const AdminIncomingOrdersPage: React.FC = () => {
   const [rejectReason, setRejectReason] = useState('Kitchen at maximum capacity / item sold out');
 
   const fetchOrders = async () => {
-    setIsLoading(true);
-    try {
-      const data = await adminApi.getOrders();
-      setOrders(data);
-    } catch (err) {
-      showToast('Failed to load incoming orders', 'error');
-    } finally {
-      setIsLoading(false);
-    }
+    // setIsLoading(true);
+    // try {
+    //   const data = await adminApi.getOrders();
+    //   setOrders(data);
+    // } catch (err) {
+    //   showToast('Failed to load incoming orders', 'error');
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   useEffect(() => {
@@ -94,34 +94,34 @@ export const AdminIncomingOrdersPage: React.FC = () => {
   const preparingOrdersCount = orders.filter((o) => o.status === 'preparing').length;
 
   const handleConfirmOrder = async (order: AdminOrder) => {
-    try {
-      const nextStatus: OrderStatus = order.status === 'new' ? 'preparing' : 'confirmed';
-      await adminApi.updateOrderStatus(order.id, nextStatus);
-      showToast(
-        `Order ${order.orderNumber} successfully confirmed! Moved to ${nextStatus}.`,
-        'success',
-        'Order Confirmed'
-      );
-      fetchOrders();
-    } catch (err) {
-      showToast('Failed to update order status', 'error');
-    }
+    // try {
+    //   const nextStatus: OrderStatus = order.status === 'new' ? 'preparing' : 'confirmed';
+    //   await adminApi.updateOrderStatus(order.id, nextStatus);
+    //   showToast(
+    //     `Order ${order.orderNumber} successfully confirmed! Moved to ${nextStatus}.`,
+    //     'success',
+    //     'Order Confirmed'
+    //   );
+    //   fetchOrders();
+    // } catch (err) {
+    //   showToast('Failed to update order status', 'error');
+    // }
   };
 
   const handleConfirmReject = async () => {
-    if (!rejectOrderTarget) return;
-    try {
-      await adminApi.updateOrderStatus(rejectOrderTarget.id, 'cancelled');
-      showToast(
-        `Order ${rejectOrderTarget.orderNumber} has been rejected. Customer notified.`,
-        'warning',
-        'Order Cancelled'
-      );
-      setRejectOrderTarget(null);
-      fetchOrders();
-    } catch (err) {
-      showToast('Failed to reject order', 'error');
-    }
+    // if (!rejectOrderTarget) return;
+    // try {
+    //   await adminApi.updateOrderStatus(rejectOrderTarget.id, 'cancelled');
+    //   showToast(
+    //     `Order ${rejectOrderTarget.orderNumber} has been rejected. Customer notified.`,
+    //     'warning',
+    //     'Order Cancelled'
+    //   );
+    //   setRejectOrderTarget(null);
+    //   fetchOrders();
+    // } catch (err) {
+    //   showToast('Failed to reject order', 'error');
+    // }
   };
 
   return (
@@ -293,9 +293,9 @@ export const AdminIncomingOrdersPage: React.FC = () => {
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChange={async (orderId, newStatus) => {
-          await adminApi.updateOrderStatus(orderId, newStatus);
-          showToast(`Order status updated to ${newStatus}`);
-          fetchOrders();
+          // await adminApi.updateOrderStatus(orderId, newStatus);
+          // showToast(`Order status updated to ${newStatus}`);
+          // fetchOrders();
         }}
       />
 

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { Button } from '../../components/admin/Button';
-import { adminApi } from '../../services/adminApi';
+// import { adminApi } from '../../services/adminApi';
 import { ADMIN_PROFILE_DATA, STORE_SETTINGS_DATA } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
 
@@ -45,27 +45,27 @@ export const AdminSettingsPage: React.FC = () => {
   const [smsAlerts, setSmsAlerts] = useState(STORE_SETTINGS_DATA.smsNotifications);
 
   const handleSaveAll = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
-    try {
-      await adminApi.updateStoreSettings({
-        storeName,
-        contactPhone: storePhone,
-        openingHours,
-        closingHours,
-        orderEstimatedPrepMinutes: prepMinutes,
-        defaultDeliveryFee: deliveryFee,
-        soundAlertsEnabled: soundAlerts,
-        emailNotifications: emailAlerts,
-        smsNotifications: smsAlerts,
-      });
+    // e.preventDefault();
+    // setIsSaving(true);
+    // try {
+    //   await adminApi.updateStoreSettings({
+    //     storeName,
+    //     contactPhone: storePhone,
+    //     openingHours,
+    //     closingHours,
+    //     orderEstimatedPrepMinutes: prepMinutes,
+    //     defaultDeliveryFee: deliveryFee,
+    //     soundAlertsEnabled: soundAlerts,
+    //     emailNotifications: emailAlerts,
+    //     smsNotifications: smsAlerts,
+    //   });
 
-      showToast('Kitchen and store settings updated successfully!', 'success', 'Settings Saved');
-    } catch (err) {
-      showToast('Failed to save settings', 'error');
-    } finally {
-      setIsSaving(false);
-    }
+    //   showToast('Kitchen and store settings updated successfully!', 'success', 'Settings Saved');
+    // } catch (err) {
+    //   showToast('Failed to save settings', 'error');
+    // } finally {
+    //   setIsSaving(false);
+    // }
   };
 
   return (

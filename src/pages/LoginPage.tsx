@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
-import { login } from '../services/auth';
+import { googleLogin, login } from '../services/auth';
 import useAuth from '../hooks/useAuth';
+import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
+import { useToast } from '../context/ToastContext';
+
 
 export interface LoginPageProps {
   onLogin?: (credentials: { username: string; password: string }) => Promise<void> | void;
@@ -62,22 +66,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [errors, setErrors] = useState<{ username?: string; password?: string; general?: string }>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isErrorToast, setIsErrorToast] = useState(false);
+  const{ showToast } = useToast();
 
   // Slider State
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const slideTimerRef = useRef<number | null>(null);
-
-  const showToast = (message: string, error = false) => {
-    if (onToast) {
-      onToast(message);
-      return;
-    }
-
-    setIsErrorToast(error);
-    setToastMessage(message);
-    window.setTimeout(() => setToastMessage(null), 3200);
-  };
 
   // Auto-slide effect (4.5s interval, pauses on hover)
   useEffect(() => {
@@ -166,20 +160,40 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           ...prev,
           general: errorMessage
         }));
-        showToast(errorMessage, true);
+        showToast(errorMessage, 'success');
       } finally {
         setIsLoading(false);
       }
     }
   };
 
-  const handleSocialClick = (provider: 'google' | 'facebook') => {
-    if (onSocialLogin) {
-      onSocialLogin(provider);
-    } else {
-      console.log('Social login clicked', provider);
+  const handleGoogleSuccess = async (tokenResponse: any) => {
+    try {
+    const res = await googleLogin(tokenResponse.access_token);
+
+    localStorage.setItem('ACCESS_TOKEN', res.access_token);
+    localStorage.setItem('REFRESH_TOKEN', res.refresh_token);
+
+    if (auth?.setUser) {
+      auth.setUser({
+        _id: res.id,
+        email: res.email,
+        roles: res.roles,
+      });
     }
-  };
+
+    showToast('Google Login successful!', 'success');
+    navigate('/');
+  } catch (err: any) {
+    const msg = err.response?.data?.message || 'Google login failed';
+    showToast(msg, 'error');
+  }
+};
+  
+  const handleSocialClick = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+  onError: () => showToast('Google Login Failed', 'error'),
+  })
 
   return (
     <div className="min-h-screen w-full bg-[#EFEFEF] flex items-center justify-center p-3 sm:p-5 lg:p-7 py-8 sm:py-6 relative select-none selection:bg-neutral-900 selection:text-white">
@@ -317,7 +331,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   {/* Google Login Button with Official Google Icon */}
                   <button
                     type="button"
-                    onClick={() => handleSocialClick('google')}
+                    onClick={() => handleSocialClick()}
                     className="w-full h-[36px] sm:h-[38px] rounded-full border border-gray-200/90 bg-white hover:bg-gray-50/80 active:scale-[0.99] transition-all duration-150 flex items-center justify-center gap-2 text-[11px] font-medium text-gray-700 shadow-2xs cursor-pointer"
                   >
                     <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">

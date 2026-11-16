@@ -17,7 +17,7 @@ import { ProductCard } from '../../components/admin/ProductCard';
 import { ProductModal } from '../../components/admin/ProductModal';
 import { Modal } from '../../components/admin/Modal';
 import { Button } from '../../components/admin/Button';
-import { adminApi } from '../../services/adminApi';
+// import { adminApi } from '../../services/adminApi';
 import { AdminProduct } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
 
@@ -37,15 +37,15 @@ export const AdminProductsPage: React.FC = () => {
   const categories = ['All', 'Burger', 'Pizza', 'Bowls & Salads', 'Pasta', 'Desserts', 'Beverages'];
 
   const fetchProducts = async () => {
-    setIsLoading(true);
-    try {
-      const data = await adminApi.getProducts();
-      setProducts(data);
-    } catch (err) {
-      showToast('Failed to load menu products', 'error');
-    } finally {
-      setIsLoading(false);
-    }
+    // setIsLoading(true);
+    // try {
+    //   const data = await adminApi.getProducts();
+    //   setProducts(data);
+    // } catch (err) {
+    //   showToast('Failed to load menu products', 'error');
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   useEffect(() => {
@@ -83,55 +83,55 @@ export const AdminProductsPage: React.FC = () => {
     productData: Omit<AdminProduct, 'id' | 'createdAt' | 'rating'>,
     editId?: string
   ) => {
-    try {
-      if (editId) {
-        await adminApi.updateProduct(editId, productData);
-        showToast(`Product "${productData.name}" updated successfully!`, 'success', 'Product Saved');
-      } else {
-        await adminApi.createProduct(productData);
-        showToast(`Product "${productData.name}" added to menu!`, 'success', 'Product Created');
-      }
-      fetchProducts();
-    } catch (err) {
-      showToast('Failed to save product', 'error');
-    }
+    // try {
+    //   if (editId) {
+    //     await adminApi.updateProduct(editId, productData);
+    //     showToast(`Product "${productData.name}" updated successfully!`, 'success', 'Product Saved');
+    //   } else {
+    //     await adminApi.createProduct(productData);
+    //     showToast(`Product "${productData.name}" added to menu!`, 'success', 'Product Created');
+    //   }
+    //   fetchProducts();
+    // } catch (err) {
+    //   showToast('Failed to save product', 'error');
+    // }
   };
 
   const handleConfirmDelete = async () => {
-    if (!deletingProduct) return;
-    try {
-      await adminApi.deleteProduct(deletingProduct.id);
-      showToast(
-        `"${deletingProduct.name}" removed from menu.`,
-        'warning',
-        'Product Deleted'
-      );
-      setDeletingProduct(null);
-      fetchProducts();
-    } catch (err) {
-      showToast('Failed to delete product', 'error');
-    }
+    // if (!deletingProduct) return;
+    // try {
+    //   await adminApi.deleteProduct(deletingProduct.id);
+    //   showToast(
+    //     `"${deletingProduct.name}" removed from menu.`,
+    //     'warning',
+    //     'Product Deleted'
+    //   );
+    //   setDeletingProduct(null);
+    //   fetchProducts();
+    // } catch (err) {
+    //   showToast('Failed to delete product', 'error');
+    // }
   };
 
   const handleToggleAvailability = async (product: AdminProduct) => {
-    try {
-      const updated = await adminApi.updateProduct(product.id, {
-        isAvailable: !product.isAvailable,
-      });
-      showToast(
-        `"${product.name}" is now ${updated.isAvailable ? 'In Stock' : 'Marked Unavailable'}.`,
-        updated.isAvailable ? 'success' : 'info'
-      );
-      fetchProducts();
-    } catch (err) {
-      showToast('Failed to update availability', 'error');
-    }
+    // try {
+    //   const updated = await adminApi.updateProduct(product.id, {
+    //     isAvailable: !product.isAvailable,
+    //   });
+    //   showToast(
+    //     `"${product.name}" is now ${updated.isAvailable ? 'In Stock' : 'Marked Unavailable'}.`,
+    //     updated.isAvailable ? 'success' : 'info'
+    //   );
+    //   fetchProducts();
+    // } catch (err) {
+    //   showToast('Failed to update availability', 'error');
+    // }
   };
 
   const handleResetDemoProducts = () => {
-    adminApi.resetDemoData();
-    fetchProducts();
-    showToast('Menu reset to initial demo products', 'info');
+    // adminApi.resetDemoData();
+    // fetchProducts();
+    // showToast('Menu reset to initial demo products', 'info');
   };
 
   return (

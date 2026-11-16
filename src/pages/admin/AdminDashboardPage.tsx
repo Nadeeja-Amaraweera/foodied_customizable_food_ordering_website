@@ -20,7 +20,7 @@ import { StatCard } from '../../components/admin/StatCard';
 import { Badge } from '../../components/admin/Badge';
 import { Button } from '../../components/admin/Button';
 import { OrderDetailsModal } from '../../components/admin/OrderDetailsModal';
-import { adminApi } from '../../services/adminApi';
+// import { adminApi } from '../../services/adminApi';
 import {
   AdminOrder,
   StatMetric,
@@ -43,18 +43,18 @@ export const AdminDashboardPage: React.FC = () => {
   const [activeChartMetric, setActiveChartMetric] = useState<'revenue' | 'orders'>('revenue');
 
   const loadDashboardData = async () => {
-    try {
-      const data = await adminApi.getDashboardMetrics();
-      setStats(data.stats);
-      setHourlySales(data.hourlySales);
-      setCategories(data.categoryDistribution);
+    // try {
+    //   const data = await adminApi.getDashboardMetrics();
+    //   setStats(data.stats);
+    //   setHourlySales(data.hourlySales);
+    //   setCategories(data.categoryDistribution);
       
-      const allOrders = await adminApi.getOrders();
-      setRecentOrders(allOrders.slice(0, 5));
-      setIncomingOrders(allOrders.filter((o) => o.status === 'new' || o.status === 'preparing'));
-    } catch (err) {
-      console.error('Failed to load dashboard data', err);
-    }
+    //   const allOrders = await adminApi.getOrders();
+    //   setRecentOrders(allOrders.slice(0, 5));
+    //   setIncomingOrders(allOrders.filter((o) => o.status === 'new' || o.status === 'preparing'));
+    // } catch (err) {
+    //   console.error('Failed to load dashboard data', err);
+    // }
   };
 
   useEffect(() => {
@@ -62,17 +62,17 @@ export const AdminDashboardPage: React.FC = () => {
   }, []);
 
   const handleConfirmOrder = async (order: AdminOrder) => {
-    try {
-      await adminApi.updateOrderStatus(order.id, 'preparing');
-      showToast(
-        `Order ${order.orderNumber} confirmed! Kitchen ticket printed.`,
-        'success',
-        'Order Confirmed'
-      );
-      loadDashboardData();
-    } catch (err) {
-      showToast('Failed to confirm order', 'error');
-    }
+    // try {
+    //   await adminApi.updateOrderStatus(order.id, 'preparing');
+    //   showToast(
+    //     `Order ${order.orderNumber} confirmed! Kitchen ticket printed.`,
+    //     'success',
+    //     'Order Confirmed'
+    //   );
+    //   loadDashboardData();
+    // } catch (err) {
+    //   showToast('Failed to confirm order', 'error');
+    // }
   };
 
   // Max value for SVG chart scaling
@@ -443,9 +443,9 @@ export const AdminDashboardPage: React.FC = () => {
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChange={async (orderId, newStatus) => {
-          await adminApi.updateOrderStatus(orderId, newStatus);
-          showToast(`Order status updated to ${newStatus}`);
-          loadDashboardData();
+          // await adminApi.updateOrderStatus(orderId, newStatus);
+          // showToast(`Order status updated to ${newStatus}`);
+          // loadDashboardData();
         }}
       />
     </AdminLayout>

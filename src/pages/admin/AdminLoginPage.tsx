@@ -14,6 +14,10 @@ import {
   Store
 } from 'lucide-react';
 import { Button } from '../../components/admin/Button';
+import { adminLogin } from '../../services/auth';
+import useAuth from '../../hooks/useAuth';
+import { useToast } from '../../context/ToastContext';
+
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,15 +25,37 @@ export const AdminLoginPage: React.FC = () => {
   const [password, setPassword] = useState('DemoAdmin2026!');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
+  const{ showToast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Admin login
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Demo only: simulate instant authentication and redirect to dashboard
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate('/admin/dashboard');
-    }, 450);
+    
+    try {
+      
+      const res = await adminLogin(email,password)
+
+      localStorage.setItem('ACCESS_TOKEN', res.access_token);
+      localStorage.setItem('REFRESH_TOKEN', res.refresh_token);
+
+      if (auth?.setUser) {
+        auth.setUser({
+          _id: res.id,
+          email: res.email,
+          roles: res.roles,
+        });
+      }
+
+      showToast('Welcome Admin','success');
+      navigate('/admin/dashboard')
+
+    } catch (error: any) {
+      const msg = error.response?.data?.message || 'Admin login failed. Please check credentials.';
+      showToast(msg, 'error');
+    }
+
   };
 
   const handleQuickDemoLogin = () => {

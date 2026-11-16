@@ -19,7 +19,7 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { Badge } from '../../components/admin/Badge';
 import { Button } from '../../components/admin/Button';
 import { OrderDetailsModal } from '../../components/admin/OrderDetailsModal';
-import { adminApi } from '../../services/adminApi';
+
 import { AdminOrder, OrderStatus } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
 
@@ -38,12 +38,12 @@ export const AdminRecentOrdersPage: React.FC = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const fetchOrders = async () => {
-    try {
-      const data = await adminApi.getOrders();
-      setOrders(data);
-    } catch (err) {
-      showToast('Failed to load past orders', 'error');
-    }
+    // try {
+    //   const data = await adminApi.getOrders();
+    //   setOrders(data);
+    // } catch (err) {
+    //   showToast('Failed to load past orders', 'error');
+    // }
   };
 
   useEffect(() => {
@@ -338,9 +338,9 @@ export const AdminRecentOrdersPage: React.FC = () => {
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChange={async (orderId, newStatus) => {
-          await adminApi.updateOrderStatus(orderId, newStatus);
-          showToast(`Order status updated to ${newStatus}`);
-          fetchOrders();
+          // await adminApi.updateOrderStatus(orderId, newStatus);
+          // showToast(`Order status updated to ${newStatus}`);
+          // fetchOrders();
         }}
       />
     </AdminLayout>
