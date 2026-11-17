@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MenuItem, HeroDish, CartItem, Chef, FloatingClone, User } from '../types';
+import { MenuItem, HeroDish, Chef, FloatingClone, User } from '../types';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { FloatingLeaf } from '../components/common/FloatingLeaf';
@@ -9,7 +9,6 @@ import { HeroSection } from '../components/sections/HeroSection';
 import { FeaturedSection } from '../components/sections/FeaturedSection';
 import { WhyChooseUsSection } from '../components/sections/WhyChooseUsSection';
 import { ChefsSection } from '../components/sections/ChefsSection';
-import { MealCustomizerModal } from '../components/modals/MealCustomizerModal';
 import { adminProductApi, AdminProduct } from '../services/adminApi';
 import useAuth from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
@@ -88,15 +87,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [floatingClone, setFloatingClone] = useState<FloatingClone | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
-  // Customer Order Customizer Modal State
-  const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
-  const [portionSize, setPortionSize] = useState('Regular');
-  const [spiceLevel, setSpiceLevel] = useState('Medium');
-  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
-  const [dietaryTags, setDietaryTags] = useState<string[]>([]);
-  const [specialNotes, setSpecialNotes] = useState('');
-  const [itemQty, setItemQty] = useState(1);
-
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -163,101 +153,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     }, 3200);
   };
 
-  // Open the Customer Meal Customizer Modal
+  // Navigate to Dedicated Product Customization Page on "Buy Now"
   const openCustomerCustomizer = (item: MenuItem, e?: React.MouseEvent<HTMLElement>) => {
     if (e && e.currentTarget) {
       setSelectedCardId(item.id);
       setTimeout(() => setSelectedCardId(null), 700);
     }
-    setCustomizingItem(item);
-
-    const initialSize = item.customization?.sizes?.[0]?.name || 'Regular';
-    setPortionSize(initialSize);
-
-    const initialSpice =
-      item.customization?.spiceLevels?.[0] ||
-      (item.isDessert ? 'Regular Sweet' : 'Medium');
-    setSpiceLevel(initialSpice);
-
-    setSelectedAddons([]);
-    setDietaryTags([]);
-    setSpecialNotes('');
-    setItemQty(1);
-  };
-
-  // 1. Dynamic Selected Size Modifier
-  const currentSizeModifier = useMemo(() => {
-    if (!customizingItem) return 0;
-    const sizes = customizingItem.customization?.sizes;
-    if (sizes && sizes.length > 0) {
-      const match = sizes.find(
-        (s) => s.name.trim().toLowerCase() === portionSize.trim().toLowerCase()
-      );
-      return match ? Number(match.priceModifier) || 0 : 0;
-    }
-    if (portionSize.toLowerCase() === 'large') return 3.0;
-    if (portionSize.toLowerCase() === 'family') return 6.0;
-    return 0;
-  }, [customizingItem, portionSize]);
-
-  // 2. Dynamic Total Selected Extras Modifier
-  const currentExtrasModifier = useMemo(() => {
-    if (!customizingItem) return 0;
-    const extras = customizingItem.customization?.extras;
-    if (extras && extras.length > 0) {
-      return selectedAddons.reduce((sum, addonName) => {
-        const cleanName = addonName.replace(/\s*\(\+\$[\d.]+\)$/i, '').trim().toLowerCase();
-        const match = extras.find(
-          (e) =>
-            e.name.trim().toLowerCase() === cleanName ||
-            e.name.trim().toLowerCase() === addonName.trim().toLowerCase()
-        );
-        return sum + (match ? Number(match.priceModifier) || 0 : 0);
-      }, 0);
-    }
-    return selectedAddons.reduce((sum, addonName) => {
-      const match = addonName.match(/\+\$([\d.]+)/);
-      if (match) return sum + parseFloat(match[1]);
-      return sum;
-    }, 0);
-  }, [customizingItem, selectedAddons]);
-
-  // 3. Dynamic Real-Time Calculated Unit Price
-  const calculatedUnitPrice = useMemo(() => {
-    if (!customizingItem) return 0;
-    const base = Number(customizingItem.price) || 0;
-    return Number((base + currentSizeModifier + currentExtrasModifier).toFixed(2));
-  }, [customizingItem, currentSizeModifier, currentExtrasModifier]);
-
-  // Add customized item to Cart
-  const handleAddToCart = () => {
-    if (!customizingItem) return;
-    const newItem: CartItem = {
-      cartId: `${customizingItem.id}-${Date.now()}`,
-      id: customizingItem.id,
-      productId: customizingItem.id,
-      name: customizingItem.name,
-      basePrice: customizingItem.price,
-      unitPrice: calculatedUnitPrice,
-      quantity: itemQty,
-      image: customizingItem.image,
-      portion: portionSize,
-      spice: spiceLevel,
-      addons: [...selectedAddons],
-      dietary: [...dietaryTags],
-      notes: specialNotes,
-      customization: {
-        size: portionSize,
-        spiceLevel: spiceLevel,
-        extras: [...selectedAddons],
-        dietary: [...dietaryTags],
-        specialInstructions: specialNotes,
-      },
-    };
-
-    addToCart(newItem);
-    setCustomizingItem(null);
-    showToast(`Added ${customizingItem.name} ($${calculatedUnitPrice.toFixed(2)}) to your food bag!`);
+    // Navigate directly to dedicated customization page
+    navigate(`/customize/${item.id}`, { state: { product: item } });
   };
 
   const handleLogout = () => {
@@ -341,33 +244,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       <Footer
         onToast={showToast}
         onNewsletterSubscribe={() => showToast('Thank you for subscribing to our newsletter!')}
-      />
-
-      <MealCustomizerModal
-        item={customizingItem}
-        portionSize={portionSize}
-        onPortionSizeChange={setPortionSize}
-        spiceLevel={spiceLevel}
-        onSpiceLevelChange={setSpiceLevel}
-        selectedAddons={selectedAddons}
-        onToggleAddon={(addon) =>
-          setSelectedAddons((prev) =>
-            prev.includes(addon) ? prev.filter((a) => a !== addon) : [...prev, addon]
-          )
-        }
-        dietaryTags={dietaryTags}
-        onToggleDietaryTag={(tag) =>
-          setDietaryTags((prev) =>
-            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-          )
-        }
-        specialNotes={specialNotes}
-        onSpecialNotesChange={setSpecialNotes}
-        quantity={itemQty}
-        onQuantityChange={setItemQty}
-        unitPrice={calculatedUnitPrice}
-        onAddToCart={handleAddToCart}
-        onClose={() => setCustomizingItem(null)}
       />
     </div>
   );

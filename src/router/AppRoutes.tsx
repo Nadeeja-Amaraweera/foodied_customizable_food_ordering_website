@@ -4,6 +4,7 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { MenuPage } from "../pages/MenuPage";
 import { CartPage } from "../pages/CartPage";
 import { MyAccountPage } from "../pages/MyAccountPage";
+import { ProductCustomizationPage } from "../pages/ProductCustomizationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import useAuth from "../hooks/useAuth";
@@ -88,6 +89,22 @@ function Router() {
           element={
             <RequiredAuth roles={["ADMIN", "USER"]}>
               <MenuPage />
+            </RequiredAuth>
+          }
+        />
+        <Route
+          path="/customize/:productId"
+          element={
+            <RequiredAuth roles={["ADMIN", "USER"]}>
+              <ProductCustomizationPage />
+            </RequiredAuth>
+          }
+        />
+        <Route
+          path="/customize"
+          element={
+            <RequiredAuth roles={["ADMIN", "USER"]}>
+              <ProductCustomizationPage />
             </RequiredAuth>
           }
         />
