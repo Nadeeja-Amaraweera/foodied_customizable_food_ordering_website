@@ -1,5 +1,6 @@
 import api from "./api";
 import { AdminProduct } from "../data/adminMockData";
+export type { AdminProduct } from "../data/adminMockData";
 
 export interface GetProductsParams {
   category?: string;

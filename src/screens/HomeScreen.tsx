@@ -10,6 +10,7 @@ import { FeaturedSection } from '../components/sections/FeaturedSection';
 import { WhyChooseUsSection } from '../components/sections/WhyChooseUsSection';
 import { ChefsSection } from '../components/sections/ChefsSection';
 import { MealCustomizerModal } from '../components/modals/MealCustomizerModal';
+import { adminProductApi, AdminProduct } from '../services/adminApi';
 import useAuth from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 
@@ -43,9 +44,42 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   // Application Data States
   const [menuItems] = useState<MenuItem[]>(initialMenuItems);
-  const [heroDishes] = useState<HeroDish[]>(initialHeroDishes);
+  const [backendProducts, setBackendProducts] = useState<AdminProduct[]>([]);
+  const [heroDishes, setHeroDishes] = useState<HeroDish[]>(initialHeroDishes);
   const [activeHeroDish, setActiveHeroDish] = useState<HeroDish | null>(null);
   const [chefs] = useState<Chef[]>(initialChefs);
+
+  // Fetch available products from backend MongoDB API
+  useEffect(() => {
+    let isMounted = true;
+    const loadProducts = async () => {
+      try {
+        const data = await adminProductApi.getProducts();
+        if (isMounted) {
+          const available = data.filter((p) => p.isAvailable !== false);
+          setBackendProducts(available);
+          const mappedDishes: HeroDish[] = available.map((p) => ({
+            id: p._id || p.id || '',
+            name: p.name,
+            price: Number(p.price),
+            calories: p.preparationTime || '15-20 min',
+            image: p.image,
+            desc: p.description,
+          }));
+          setHeroDishes(mappedDishes);
+          if (mappedDishes.length > 0 && !activeHeroDish) {
+            setActiveHeroDish(mappedDishes[0]);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load products for HomeScreen:', err);
+      }
+    };
+    loadProducts();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Floating-In Animation States & Controls
   const [heroAnimKey, setHeroAnimKey] = useState(1);
@@ -247,15 +281,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     <div className="min-h-screen bg-[#FAFDF7] text-[#1A1A1A] font-sans relative overflow-x-hidden selection:bg-[#8BC34A] selection:text-white">
       <FloatingDishClone clone={floatingClone} />
 
-      {/* Top Organic Green Blob Shape */}
-      <div
-        className="hidden lg:block absolute top-0 right-0 w-[56%] h-[650px] bg-[#8BC34A] pointer-events-none z-0 transition-all duration-500"
-        style={{
-          borderBottomLeftRadius: '55% 82%',
-          borderBottomRightRadius: '18% 25%',
-          boxShadow: 'inset 0 -20px 50px rgba(0,0,0,0.04)'
-        }}
-      />
+      {/* Top Organic Green Background Curve matching reference */}
+      <svg
+        className="hidden md:block absolute top-0 right-0 w-full sm:w-[90%] md:w-[75%] lg:w-[62%] xl:w-[58%] h-[620px] sm:h-[680px] lg:h-[760px] pointer-events-none z-0 overflow-visible transition-all duration-500"
+        viewBox="0 0 850 760"
+        fill="none"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M 120 0 C 140 180, 240 250, 190 430 C 130 580, 300 700, 850 640 L 850 0 Z"
+          fill="#7CB342"
+        />
+      </svg>
 
       {/* Decorative Floating Leaves on the Page Edges */}
       <FloatingLeaf className="hidden md:block w-28 h-28 absolute top-[1180px] -right-6 z-10 opacity-95 rotate-12" />
@@ -288,6 +325,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         onReplayFloat={() => activeHeroDish && triggerHeroDishFloat(activeHeroDish, 165, 135, -24)}
         onSelectHeroDish={(dish, x, y, rot) => triggerHeroDishFloat(dish, x, y, rot)}
         onCustomizeDish={openCustomerCustomizer}
+        backendProducts={backendProducts}
       />
 
       <FeaturedSection
