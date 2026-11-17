@@ -33,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isHome = pathname === '/';
   const isMenu = pathname === '/menu';
   const isCart = pathname === '/cart';
+  const isAccount = pathname === '/account' || pathname === '/my-account';
 
   const handleCartClick = () => {
     if (onCartOpen) {
@@ -138,18 +139,31 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
-          {/* User Profile / Logout or Sign In */}
+          {/* User Profile / Account or Sign In */}
           {currentUser ? (
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-sm border border-gray-200/80 text-xs font-semibold text-gray-800">
-              <span className="w-5 h-5 rounded-full bg-[#8BC34A] text-white flex items-center justify-center text-[10px] font-black uppercase">
-                {currentUser.email?.[0]?.toUpperCase() || 'U'}
-              </span>
-              <span className="max-w-[100px] truncate hidden sm:inline">
-                {currentUser.email?.split('@')[0] || 'User'}
-              </span>
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-sm border transition text-xs font-semibold text-gray-800 ${
+                isAccount
+                  ? 'border-[#8BC34A] ring-2 ring-[#8BC34A]/25'
+                  : 'border-gray-200/80 hover:border-gray-300'
+              }`}
+            >
+              <Link
+                to="/account"
+                title="View My Account & Orders"
+                className="flex items-center gap-1.5 hover:text-[#558B2F] transition cursor-pointer"
+              >
+                <span className="w-6 h-6 rounded-full bg-[#8BC34A] text-white flex items-center justify-center text-[10px] font-black uppercase shadow-xs">
+                  {currentUser.email?.[0]?.toUpperCase() || 'U'}
+                </span>
+                <span className="max-w-[110px] truncate hidden sm:inline">
+                  {currentUser.username || currentUser.email?.split('@')[0] || 'My Account'}
+                </span>
+              </Link>
               {onLogout && (
                 <button
                   onClick={onLogout}
+                  title="Sign out"
                   className="text-gray-400 hover:text-red-500 text-[11px] font-normal underline ml-1 cursor-pointer"
                 >
                   Logout
@@ -204,6 +218,18 @@ export const Header: React.FC<HeaderProps> = ({
         >
           Contact Us
         </button>
+        {currentUser && (
+          <Link
+            to="/account"
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${
+              isAccount
+                ? 'bg-[#8BC34A] text-white shadow-sm'
+                : 'bg-white text-gray-700 border border-gray-200'
+            }`}
+          >
+            Account
+          </Link>
+        )}
       </div>
     </header>
   );

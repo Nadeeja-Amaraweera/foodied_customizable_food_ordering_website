@@ -46,7 +46,59 @@ export interface ValidatePricePayload {
   totalPrice?: number;
 }
 
+export interface CustomerOrder {
+  _id: string;
+  id?: string;
+  orderNumber: string;
+  customer: CustomerPayload;
+  items: {
+    productId: string;
+    name: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+    image?: string;
+    customization?: OrderCustomizationPayload;
+  }[];
+  subtotal: number;
+  deliveryFee: number;
+  tax: number;
+  totalAmount: number;
+  status: 'new' | 'preparing' | 'confirmed' | 'delivered' | 'cancelled';
+  paymentMethod: string;
+  paymentStatus: string;
+  placedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MyOrdersResponse {
+  message: string;
+  data: CustomerOrder[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  statusCounts: {
+    all: number;
+    preparing: number;
+    confirmed: number;
+    cancelled: number;
+    delivered: number;
+    new: number;
+  };
+}
+
 export const orderApi = {
+  /**
+   * Fetch authenticated customer's order history with status filter & pagination
+   */
+  async getMyOrders(params?: { status?: string; page?: number; limit?: number }): Promise<MyOrdersResponse> {
+    const res = await api.get('/orders/my-orders', { params });
+    return res.data;
+  },
   /**
    * Validate customized product price against backend MongoDB database
    */
