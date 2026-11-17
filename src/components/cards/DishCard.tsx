@@ -3,6 +3,9 @@ import { Sparkles } from 'lucide-react';
 import { MenuItem } from '../../types';
 import { StarRating } from '../common/StarRating';
 
+const FALLBACK_DISH_IMAGE =
+  'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+
 export interface DishCardProps {
   item: MenuItem;
   variant?: 'featured' | 'special' | 'regular';
@@ -129,8 +132,11 @@ export const DishCard: React.FC<DishCardProps> = ({
         }`}
       >
         <img
-          src={item.image}
+          src={item.image || FALLBACK_DISH_IMAGE}
           alt={item.name}
+          onError={(e) => {
+            e.currentTarget.src = FALLBACK_DISH_IMAGE;
+          }}
           className="w-full h-full object-cover rounded-full bg-white transition-transform duration-500 group-hover:rotate-6"
         />
         <button

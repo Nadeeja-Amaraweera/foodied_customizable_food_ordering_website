@@ -14,6 +14,8 @@ import { ChefsSection } from '../components/sections/ChefsSection';
 import { MealCustomizerModal } from '../components/modals/MealCustomizerModal';
 import { CartDrawer } from '../components/cart/CartDrawer';
 import useAuth from '../hooks/useAuth';
+import { adminProductApi } from '../services/adminApi';
+import { AdminProduct } from '../data/adminMockData';
 
 export interface HomeScreenProps {
   initialMenuItems?: MenuItem[];
@@ -31,9 +33,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   // Application Data States (Ready for Backend API Integration)
   const [menuItems] = useState<MenuItem[]>(initialMenuItems);
+  const [backendProducts, setBackendProducts] = useState<AdminProduct[]>([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [heroDishes] = useState<HeroDish[]>(initialHeroDishes);
   const [activeHeroDish, setActiveHeroDish] = useState<HeroDish | null>(null);
   const [chefs] = useState<Chef[]>(initialChefs);
+
+  // Fetch available products from MongoDB backend API for "OUR REGULAR FOOD"
+  useEffect(() => {
+    let isMounted = true;
+    const fetchRegularProducts = async () => {
+      try {
+        setIsProductsLoading(true);
+        const data = await adminProductApi.getProducts();
+        if (isMounted) {
+          // Filter only products marked as available (isAvailable === true)
+          const available = (data || []).filter((p) => p.isAvailable === true);
+          setBackendProducts(available);
+        }
+      } catch (err) {
+        console.error('Failed to load regular food products from backend:', err);
+      } finally {
+        if (isMounted) {
+          setIsProductsLoading(false);
+        }
+      }
+    };
+
+    fetchRegularProducts();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Floating-In Animation States & Controls
   const [heroAnimKey, setHeroAnimKey] = useState(1);
@@ -192,16 +223,70 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     [menuItems, searchQuery]
   );
 
-  const regularItems = useMemo(
-    () =>
-      menuItems
-        .filter((i) => i.section === 'regular')
-        .filter((i) =>
-          regularCategoryFilter === 'All' ? true : i.category === regularCategoryFilter
-        )
-        .filter((i) => i.name.toLowerCase().includes(searchQuery.toLowerCase())),
-    [menuItems, regularCategoryFilter, searchQuery]
-  );
+  // Dynamic category list derived from backend products
+  const regularCategories = useMemo(() => {
+    const base = ['All', 'Burger', 'Pizza', 'Bowls & Salads', 'Pasta', 'Desserts', 'Beverages'];
+    const present = new Set<string>();
+    backendProducts.forEach((p) => {
+      if (p.category) present.add(p.category);
+    });
+    present.forEach((c) => {
+      if (!base.includes(c)) base.push(c);
+    });
+    return base;
+  }, [backendProducts]);
+
+  // Real backend products mapped to MenuItem format for Regular Food Section
+  const regularItems = useMemo(() => {
+    return backendProducts
+      .map((p) => {
+        const id = p._id || p.id || '';
+        const defaultAddons =
+          p.customization?.extras && p.customization.extras.length > 0
+            ? p.customization.extras.map((e) =>
+                e.priceModifier > 0
+                  ? `${e.name} (+$${Number(e.priceModifier).toFixed(2)})`
+                  : e.name
+              )
+            : ['Extra Cheese (+$1.50)', 'Crispy Bacon (+$2.00)', 'Garlic Aioli (+$0.80)'];
+
+        const menuItem: MenuItem = {
+          id,
+          section: 'regular',
+          name: p.name,
+          price: Number(p.price) || 0,
+          rating: p.rating || 4.9,
+          reviews: 24,
+          category: p.category,
+          isDessert: p.category === 'Desserts',
+          image: p.image,
+          description: p.description,
+          defaultAddons,
+          addonsText: defaultAddons.slice(0, 3).join(', '),
+          isAvailable: p.isAvailable,
+          customization: p.customization
+        };
+        return menuItem;
+      })
+      .filter((i) => {
+        if (regularCategoryFilter === 'All') return true;
+        const filterNorm = regularCategoryFilter.toLowerCase().replace(/s$/, '');
+        const itemCatNorm = (i.category || '').toLowerCase().replace(/s$/, '');
+        return (
+          i.category === regularCategoryFilter ||
+          itemCatNorm === filterNorm ||
+          itemCatNorm.includes(filterNorm)
+        );
+      })
+      .filter((i) => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          i.name.toLowerCase().includes(q) ||
+          (i.description || '').toLowerCase().includes(q)
+        );
+      });
+  }, [backendProducts, regularCategoryFilter, searchQuery]);
 
   const cartTotalCount = cart.reduce((acc, item) => acc + (item.quantity || 0), 0);
   const cartSubtotal = cart.reduce(
@@ -275,10 +360,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       <RegularFoodSection
         regularItems={regularItems}
+        categories={regularCategories}
         activeCategory={regularCategoryFilter}
         onCategoryChange={setRegularCategoryFilter}
         selectedCardId={selectedCardId}
         onCustomizeDish={openCustomerCustomizer}
+        isLoading={isProductsLoading}
       />
 
       <ChefsSection chefs={chefs} />

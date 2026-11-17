@@ -11,6 +11,12 @@ export type MenuItem = {
   description: string;
   defaultAddons?: string[];
   addonsText?: string;
+  isAvailable?: boolean;
+  customization?: {
+    sizes?: { name: string; priceModifier: number }[];
+    extras?: { name: string; priceModifier: number }[];
+    spiceLevels?: string[];
+  };
 };
 
 export type HeroDish = {

@@ -10,7 +10,8 @@ export interface ProductCustomizationConfig {
 }
 
 export interface AdminProduct {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   category: 'Pizza' | 'Burger' | 'Bowls & Salads' | 'Pasta' | 'Desserts' | 'Beverages';
   price: number;
@@ -18,9 +19,10 @@ export interface AdminProduct {
   image: string;
   isAvailable: boolean;
   preparationTime: string; // e.g. "15-20 min"
-  rating: number;
+  rating?: number;
   customization: ProductCustomizationConfig;
-  createdAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface OrderItemCustomization {
