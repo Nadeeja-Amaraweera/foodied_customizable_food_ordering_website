@@ -44,19 +44,26 @@ export const RequiredAuth = ({ children, roles }: RequiredAuthProps) => {
 };
 
 export const AdminRequiredAuth = ({ children }: { children: JSX.Element }) => {
-    const { user, loading } = useAuth();
+  const { user, loading } = useAuth();
 
-    if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#1A1A2E] flex flex-col items-center justify-center text-white">
+        <div className="w-10 h-10 border-4 border-[#FF6B35] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-sm font-semibold text-gray-400">Verifying admin session...</p>
+      </div>
+    );
+  }
 
-    if (!user) {
-        return <Navigate to="/admin/login" replace />;
-    }
+  if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
 
-    if (!user.roles?.includes("ADMIN")) {
-        return <Navigate to="/admin/login" replace />;
-    }
+  if (!user.roles?.includes("ADMIN")) {
+    return <Navigate to="/admin/login" replace />;
+  }
 
-    return <>{children}</>;
+  return children;
 };
 
 function Router() {
@@ -67,7 +74,7 @@ function Router() {
         <Route
           path="/"
           element={
-            <RequiredAuth roles={["ADMIN","USER"]}>
+            <RequiredAuth roles={["ADMIN", "USER"]}>
               <HomeScreen />
             </RequiredAuth>
           }
@@ -77,37 +84,54 @@ function Router() {
 
         {/* Admin Dashboard Routes */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
-        {/* <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} /> */}
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
 
-        <Route path="/admin/dashboard" element={
-          <AdminRequiredAuth>
-          <AdminDashboardPage />
-          </AdminRequiredAuth>} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRequiredAuth>
+              <AdminDashboardPage />
+            </AdminRequiredAuth>
+          }
+        />
 
-        <Route path="/admin/orders/incoming" element={
-          <RequiredAuth roles={["ADMIN"]}>
-          <AdminIncomingOrdersPage />
-          </RequiredAuth>} />
+        <Route
+          path="/admin/orders/incoming"
+          element={
+            <AdminRequiredAuth>
+              <AdminIncomingOrdersPage />
+            </AdminRequiredAuth>
+          }
+        />
 
-        <Route path="/admin/orders/recent" element={
-          <RequiredAuth roles={["ADMIN"]}>
-          <AdminRecentOrdersPage />
-          </RequiredAuth>
-          } />
+        <Route
+          path="/admin/orders/recent"
+          element={
+            <AdminRequiredAuth>
+              <AdminRecentOrdersPage />
+            </AdminRequiredAuth>
+          }
+        />
 
-        <Route path="/admin/products" element={
-          <RequiredAuth roles={["ADMIN"]}>
-          <AdminProductsPage />
-          </RequiredAuth>
-          } />
+        <Route
+          path="/admin/products"
+          element={
+            <AdminRequiredAuth>
+              <AdminProductsPage />
+            </AdminRequiredAuth>
+          }
+        />
 
-        <Route path="/admin/settings" element={
-          <RequiredAuth roles={["ADMIN"]}>
-          <AdminSettingsPage />
-          </RequiredAuth>
-          } />
+        <Route
+          path="/admin/settings"
+          element={
+            <AdminRequiredAuth>
+              <AdminSettingsPage />
+            </AdminRequiredAuth>
+          }
+        />
 
-        {/* Catch-all redirect to Admin Login or Home */}
+        {/* Catch-all redirect to Admin Dashboard or Home */}
         <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

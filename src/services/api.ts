@@ -4,7 +4,13 @@ const api = axios.create({
     baseURL: "http://localhost:3000/api/v1",
 })
 
-const PUBLIC_ENDPOINTS = ["/auth/login", "/auth/register", "/auth/google"];
+const PUBLIC_ENDPOINTS = [
+  "/auth/login",
+  "/auth/admin/login",
+  "/auth/register",
+  "/auth/google",
+  "/auth/refresh"
+];
 
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem("ACCESS_TOKEN");

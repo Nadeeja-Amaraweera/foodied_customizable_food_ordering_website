@@ -28,10 +28,14 @@ import {
   CategoryDistribution
 } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
+import useAuth from '../../hooks/useAuth';
 
 export const AdminDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
+
+  const adminName = user?.name || user?.username || (user?.email ? user.email.split('@')[0] : 'Admin');
 
   const [stats, setStats] = useState<StatMetric[]>([]);
   const [hourlySales, setHourlySales] = useState<SalesChartPoint[]>([]);
@@ -82,7 +86,7 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <AdminLayout
       title="Kitchen & Dispatch Dashboard"
-      subtitle="Welcome back, Chef Marcus. Kitchen operations running smoothly."
+      subtitle={`Welcome back, ${adminName}. Kitchen operations running smoothly.`}
       newOrdersCount={incomingOrders.filter((o) => o.status === 'new').length}
     >
       <div className="space-y-6">

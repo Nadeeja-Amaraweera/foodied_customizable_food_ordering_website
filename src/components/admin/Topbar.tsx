@@ -11,7 +11,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ADMIN_PROFILE_DATA } from '../../data/adminMockData';
+import useAuth from '../../hooks/useAuth';
 
 interface TopbarProps {
   onToggleMobileSidebar: () => void;
@@ -26,9 +26,13 @@ export const Topbar: React.FC<TopbarProps> = ({
   subtitle,
   newOrdersCount = 2,
 }) => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState(true);
+
+  const adminName = user?.name || user?.username || (user?.email ? user.email.split('@')[0] : 'Admin');
+  const avatarInitial = (adminName.charAt(0) || 'A').toUpperCase();
 
   return (
     <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-soft-sm">
@@ -197,19 +201,19 @@ export const Topbar: React.FC<TopbarProps> = ({
             className="flex items-center gap-2.5 pl-2 border-l border-gray-100 cursor-pointer group"
           >
             <div className="relative">
-              <img
-                src={ADMIN_PROFILE_DATA.avatar}
-                alt={ADMIN_PROFILE_DATA.name}
-                className="w-9 h-9 rounded-xl object-cover ring-2 ring-primary/20 group-hover:ring-primary transition-all"
-              />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#FF6B35] to-[#F7931E] flex items-center justify-center text-white font-bold text-sm ring-2 ring-primary/20 group-hover:ring-primary transition-all shadow-xs">
+                {avatarInitial}
+              </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
             </div>
 
             <div className="hidden xl:block text-left">
               <p className="text-xs font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors">
-                {ADMIN_PROFILE_DATA.name}
+                {adminName}
               </p>
-              <p className="text-[10px] text-gray-400">Head of Operations</p>
+              <p className="text-[10px] text-gray-400 truncate max-w-[130px]">
+                {user?.email || 'Head of Operations'}
+              </p>
             </div>
           </div>
         </div>
@@ -217,4 +221,3 @@ export const Topbar: React.FC<TopbarProps> = ({
     </header>
   );
 };
-

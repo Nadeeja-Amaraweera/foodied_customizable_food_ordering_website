@@ -12,7 +12,7 @@ import {
   ChevronRight,
   X
 } from 'lucide-react';
-import { ADMIN_PROFILE_DATA } from '../../data/adminMockData';
+import useAuth from '../../hooks/useAuth';
 
 interface SidebarProps {
   isOpenMobile: boolean;
@@ -25,7 +25,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   newOrdersCount = 2,
 }) => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const adminName = user?.name || user?.username || (user?.email ? user.email.split('@')[0] : 'Admin');
+  const avatarInitial = (adminName.charAt(0) || 'A').toUpperCase();
 
   const navLinks = [
     {
@@ -58,6 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const handleLogout = () => {
+    logout();
     navigate('/admin/login');
   };
 
@@ -163,19 +168,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center justify-between gap-3 p-2 rounded-xl bg-white/[0.04]">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="relative shrink-0">
-              <img
-                src={ADMIN_PROFILE_DATA.avatar}
-                alt={ADMIN_PROFILE_DATA.name}
-                className="w-9 h-9 rounded-xl object-cover border border-white/20"
-              />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#FF6B35] to-[#F7931E] flex items-center justify-center text-white font-bold text-sm border border-white/20 shadow-xs">
+                {avatarInitial}
+              </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#161628]" />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-white truncate leading-tight">
-                {ADMIN_PROFILE_DATA.name}
+                {adminName}
               </p>
               <p className="text-[11px] text-gray-400 truncate">
-                {ADMIN_PROFILE_DATA.badge}
+                {user?.email || 'Super Admin'}
               </p>
             </div>
           </div>
@@ -214,4 +217,3 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </>
   );
 };
-

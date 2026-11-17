@@ -10,7 +10,6 @@ import {
   Sparkles,
   ShieldCheck,
   CheckCircle2,
-  Utensils,
   Store
 } from 'lucide-react';
 import { Button } from '../../components/admin/Button';
@@ -18,52 +17,73 @@ import { adminLogin } from '../../services/auth';
 import useAuth from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
 
-
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('admin@foodiedkitchen.com');
-  const [password, setPassword] = useState('DemoAdmin2026!');
+  const [email, setEmail] = useState('nadeeja@gmail.com');
+  const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
-  const{ showToast } = useToast();
+  const { showToast } = useToast();
 
   // Admin login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      
-      const res = await adminLogin(email,password)
+      const res = await adminLogin(email, password);
 
       localStorage.setItem('ACCESS_TOKEN', res.access_token);
       localStorage.setItem('REFRESH_TOKEN', res.refresh_token);
 
-      if (auth?.setUser) {
-        auth.setUser({
-          _id: res.id,
-          email: res.email,
-          roles: res.roles,
-        });
-      }
+      auth.setUser({
+        _id: res.id,
+        id: res.id,
+        name: res.name,
+        email: res.email,
+        roles: res.roles,
+      });
 
-      showToast('Welcome Admin','success');
-      navigate('/admin/dashboard')
+      showToast(`Welcome back, ${res.name || 'Admin'}!`, 'success');
+      navigate('/admin/dashboard');
 
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Admin login failed. Please check credentials.';
       showToast(msg, 'error');
+    } finally {
+      setIsLoading(false);
     }
-
   };
 
-  const handleQuickDemoLogin = () => {
+  const handleQuickDemoLogin = async () => {
+    setEmail('nadeeja@gmail.com');
+    setPassword('123456');
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const res = await adminLogin('nadeeja@gmail.com', '123456');
+
+      localStorage.setItem('ACCESS_TOKEN', res.access_token);
+      localStorage.setItem('REFRESH_TOKEN', res.refresh_token);
+
+      auth.setUser({
+        _id: res.id,
+        id: res.id,
+        name: res.name,
+        email: res.email,
+        roles: res.roles,
+      });
+
+      showToast(`Welcome back, ${res.name || 'Admin'}!`, 'success');
       navigate('/admin/dashboard');
-    }, 200);
+
+    } catch (error: any) {
+      const msg = error.response?.data?.message || 'Login failed. Please verify admin credentials or ensure the server is running.';
+      showToast(msg, 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -133,14 +153,14 @@ export const AdminLoginPage: React.FC = () => {
                 Admin Sign In
               </h3>
               <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-orange-100 text-[#FF6B35]">
-                DEMO MODE
+                AUTHENTICATED
               </span>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
-                  Email Address
+                  Admin Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -221,7 +241,7 @@ export const AdminLoginPage: React.FC = () => {
                 onClick={handleQuickDemoLogin}
                 className="w-full text-xs font-semibold hover:border-primary text-gray-700"
               >
-                ⚡ 1-Click Demo Login (No Password Needed)
+                ⚡ 1-Click Admin Login (nadeeja@gmail.com)
               </Button>
             </div>
           </div>
@@ -237,7 +257,7 @@ export const AdminLoginPage: React.FC = () => {
             </Link>
             <span className="flex items-center gap-1 text-gray-400">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              Admin Demo Secure
+              Admin Portal Secured
             </span>
           </div>
         </div>
@@ -246,4 +266,3 @@ export const AdminLoginPage: React.FC = () => {
     </div>
   );
 };
-

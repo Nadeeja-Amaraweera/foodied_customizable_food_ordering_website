@@ -17,19 +17,32 @@ import {
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { Button } from '../../components/admin/Button';
 // import { adminApi } from '../../services/adminApi';
-import { ADMIN_PROFILE_DATA, STORE_SETTINGS_DATA } from '../../data/adminMockData';
+import { STORE_SETTINGS_DATA } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
+import useAuth from '../../hooks/useAuth';
 
 export const AdminSettingsPage: React.FC = () => {
   const { showToast } = useToast();
+  const { user } = useAuth();
+
+  const adminName = user?.name || user?.username || (user?.email ? user.email.split('@')[0] : 'Admin');
+  const avatarInitial = (adminName.charAt(0) || 'A').toUpperCase();
 
   const [activeTab, setActiveTab] = useState<'profile' | 'store' | 'notifications' | 'theme'>('profile');
   const [isSaving, setIsSaving] = useState(false);
 
   // Profile Form
-  const [profileName, setProfileName] = useState(ADMIN_PROFILE_DATA.name);
-  const [profileEmail, setProfileEmail] = useState(ADMIN_PROFILE_DATA.email);
-  const [profileRole, setProfileRole] = useState(ADMIN_PROFILE_DATA.role);
+  const [profileName, setProfileName] = useState(adminName);
+  const [profileEmail, setProfileEmail] = useState(user?.email || '');
+  const [profileRole, setProfileRole] = useState(user?.roles?.includes('ADMIN') ? 'Super Admin' : 'Admin');
+
+  useEffect(() => {
+    if (user) {
+      const name = user.name || user.username || (user.email ? user.email.split('@')[0] : 'Admin');
+      setProfileName(name);
+      if (user.email) setProfileEmail(user.email);
+    }
+  }, [user]);
 
   // Store Settings Form
   const [storeName, setStoreName] = useState(STORE_SETTINGS_DATA.storeName);
@@ -131,11 +144,9 @@ export const AdminSettingsPage: React.FC = () => {
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-soft space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 pb-6 border-b border-gray-100">
               <div className="relative">
-                <img
-                  src={ADMIN_PROFILE_DATA.avatar}
-                  alt={profileName}
-                  className="w-20 h-20 rounded-2xl object-cover ring-4 ring-orange-100 shadow-soft"
-                />
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#FF6B35] to-[#F7931E] flex items-center justify-center text-white font-black text-2xl ring-4 ring-orange-100 shadow-soft">
+                  {avatarInitial}
+                </div>
                 <button
                   type="button"
                   onClick={() => showToast('Avatar upload available in connected storage mode', 'info')}
@@ -154,7 +165,7 @@ export const AdminSettingsPage: React.FC = () => {
                   <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#F7931E] text-white">
                     Super Admin
                   </span>
-                  <span className="text-xs text-gray-400">Joined {ADMIN_PROFILE_DATA.joinedDate}</span>
+                  <span className="text-xs text-gray-400">Authenticated Session</span>
                 </div>
               </div>
             </div>
