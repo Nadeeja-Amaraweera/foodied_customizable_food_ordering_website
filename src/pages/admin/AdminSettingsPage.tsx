@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { Button } from '../../components/admin/Button';
-// import { adminApi } from '../../services/adminApi';
+import { adminUserApi } from '../../services/adminApi';
 import { STORE_SETTINGS_DATA } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
 import useAuth from '../../hooks/useAuth';
@@ -44,41 +44,92 @@ export const AdminSettingsPage: React.FC = () => {
     }
   }, [user]);
 
-  // Store Settings Form
-  const [storeName, setStoreName] = useState(STORE_SETTINGS_DATA.storeName);
-  const [storePhone, setStorePhone] = useState(STORE_SETTINGS_DATA.contactPhone);
-  const [openingHours, setOpeningHours] = useState(STORE_SETTINGS_DATA.openingHours);
-  const [closingHours, setClosingHours] = useState(STORE_SETTINGS_DATA.closingHours);
-  const [prepMinutes, setPrepMinutes] = useState(STORE_SETTINGS_DATA.orderEstimatedPrepMinutes);
-  const [deliveryFee, setDeliveryFee] = useState(STORE_SETTINGS_DATA.defaultDeliveryFee);
+  // Store Settings Form (load from localStorage or default)
+  const savedStore = (() => {
+    try {
+      const s = localStorage.getItem('foodied_store_settings');
+      return s ? JSON.parse(s) : null;
+    } catch {
+      return null;
+    }
+  })();
 
-  // Notification Toggles
-  const [soundAlerts, setSoundAlerts] = useState(STORE_SETTINGS_DATA.soundAlertsEnabled);
-  const [emailAlerts, setEmailAlerts] = useState(STORE_SETTINGS_DATA.emailNotifications);
-  const [smsAlerts, setSmsAlerts] = useState(STORE_SETTINGS_DATA.smsNotifications);
+  const [storeName, setStoreName] = useState(savedStore?.storeName || STORE_SETTINGS_DATA.storeName);
+  const [storePhone, setStorePhone] = useState(savedStore?.storePhone || STORE_SETTINGS_DATA.contactPhone);
+  const [openingHours, setOpeningHours] = useState(savedStore?.openingHours || STORE_SETTINGS_DATA.openingHours);
+  const [closingHours, setClosingHours] = useState(savedStore?.closingHours || STORE_SETTINGS_DATA.closingHours);
+  const [prepMinutes, setPrepMinutes] = useState(savedStore?.prepMinutes || STORE_SETTINGS_DATA.orderEstimatedPrepMinutes);
+  const [deliveryFee, setDeliveryFee] = useState(savedStore?.deliveryFee || STORE_SETTINGS_DATA.defaultDeliveryFee);
 
-  const handleSaveAll = async (e: React.FormEvent) => {
-    // e.preventDefault();
-    // setIsSaving(true);
-    // try {
-    //   await adminApi.updateStoreSettings({
-    //     storeName,
-    //     contactPhone: storePhone,
-    //     openingHours,
-    //     closingHours,
-    //     orderEstimatedPrepMinutes: prepMinutes,
-    //     defaultDeliveryFee: deliveryFee,
-    //     soundAlertsEnabled: soundAlerts,
-    //     emailNotifications: emailAlerts,
-    //     smsNotifications: smsAlerts,
-    //   });
+  // Notification Toggles (load from localStorage or default)
+  const savedNotifs = (() => {
+    try {
+      const s = localStorage.getItem('foodied_notification_settings');
+      return s ? JSON.parse(s) : null;
+    } catch {
+      return null;
+    }
+  })();
 
-    //   showToast('Kitchen and store settings updated successfully!', 'success', 'Settings Saved');
-    // } catch (err) {
-    //   showToast('Failed to save settings', 'error');
-    // } finally {
-    //   setIsSaving(false);
-    // }
+  const [soundAlerts, setSoundAlerts] = useState(savedNotifs?.soundAlerts ?? STORE_SETTINGS_DATA.soundAlertsEnabled);
+  const [emailAlerts, setEmailAlerts] = useState(savedNotifs?.emailAlerts ?? STORE_SETTINGS_DATA.emailNotifications);
+  const [smsAlerts, setSmsAlerts] = useState(savedNotifs?.smsAlerts ?? STORE_SETTINGS_DATA.smsNotifications);
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await adminUserApi.updateProfile(profileName);
+      // Update cached user in localStorage
+      const cached = localStorage.getItem('user');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          parsed.name = profileName;
+          localStorage.setItem('user', JSON.stringify(parsed));
+        } catch {}
+      }
+      showToast('Admin profile name updated successfully in MongoDB!', 'success', 'Profile Updated');
+    } catch (err: any) {
+      console.error('Failed to update profile:', err);
+      showToast(err.response?.data?.message || 'Failed to update profile', 'error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveStore = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      const payload = {
+        storeName,
+        storePhone,
+        openingHours,
+        closingHours,
+        prepMinutes,
+        deliveryFee,
+      };
+      localStorage.setItem('foodied_store_settings', JSON.stringify(payload));
+      showToast('Kitchen and store operations settings updated!', 'success', 'Settings Saved');
+    } catch (err) {
+      showToast('Failed to save store settings', 'error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveNotifications = async () => {
+    setIsSaving(true);
+    try {
+      const payload = { soundAlerts, emailAlerts, smsAlerts };
+      localStorage.setItem('foodied_notification_settings', JSON.stringify(payload));
+      showToast('Kitchen alerts and notification preferences saved!', 'success', 'Alerts Saved');
+    } catch (err) {
+      showToast('Failed to save notifications', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -170,7 +221,8 @@ export const AdminSettingsPage: React.FC = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSaveAll} className="space-y-4">
+            {/* Tab 1: Admin Profile Form */}
+            <form onSubmit={handleSaveProfile} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
@@ -242,7 +294,8 @@ export const AdminSettingsPage: React.FC = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSaveAll} className="space-y-4">
+            {/* Tab 2: Store Form */}
+            <form onSubmit={handleSaveStore} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
@@ -420,7 +473,7 @@ export const AdminSettingsPage: React.FC = () => {
             </div>
 
             <div className="pt-4 border-t border-gray-100 flex justify-end">
-              <Button type="button" onClick={handleSaveAll} variant="gradient" isLoading={isSaving} leftIcon={<Save className="w-4 h-4" />}>
+              <Button type="button" onClick={handleSaveNotifications} variant="gradient" isLoading={isSaving} leftIcon={<Save className="w-4 h-4" />}>
                 Save Alert Settings
               </Button>
             </div>

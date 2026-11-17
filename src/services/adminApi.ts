@@ -66,4 +66,40 @@ export const adminProductApi = {
   },
 };
 
+export interface AdminUser {
+  id: string;
+  _id: string;
+  name: string;
+  email: string;
+  roles: string[];
+  googleId?: string;
+  createdAt: string;
+  totalOrders: number;
+  totalSpent: number;
+  lastOrderDate?: string | null;
+}
+
+export const adminUserApi = {
+  /**
+   * Get all registered users/customers
+   */
+  async getUsers(): Promise<AdminUser[]> {
+    const res = await api.get("/auth/users");
+    return res.data.data || [];
+  },
+
+  /**
+   * Update admin profile
+   */
+  async updateProfile(name: string): Promise<{ id: string; name: string; email: string }> {
+    const res = await api.put("/auth/profile", { name });
+    return res.data.data;
+  },
+};
+
+export const adminApi = {
+  products: adminProductApi,
+  users: adminUserApi,
+};
+
 export default adminProductApi;

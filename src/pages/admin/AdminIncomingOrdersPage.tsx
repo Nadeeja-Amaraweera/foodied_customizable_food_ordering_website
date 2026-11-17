@@ -302,9 +302,13 @@ export const AdminIncomingOrdersPage: React.FC = () => {
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChange={async (orderId, newStatus) => {
-          // await adminApi.updateOrderStatus(orderId, newStatus);
-          // showToast(`Order status updated to ${newStatus}`);
-          // fetchOrders();
+          try {
+            await orderApi.updateOrderStatus(orderId, newStatus);
+            showToast(`Order status updated to ${newStatus}`, 'success', 'Status Updated');
+            fetchOrders();
+          } catch (err) {
+            showToast('Failed to update order status', 'error');
+          }
         }}
       />
 

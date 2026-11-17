@@ -86,7 +86,31 @@ export const AdminRecentOrdersPage: React.FC = () => {
   }, [filteredOrders, currentPage]);
 
   const handleExportCSV = () => {
-    showToast('Orders export generated as CSV', 'info', 'Report Ready');
+    if (filteredOrders.length === 0) {
+      showToast('No orders to export', 'info');
+      return;
+    }
+    const headers = ['Order Number', 'Customer Name', 'Phone', 'Items', 'Total Amount', 'Status', 'Payment Method', 'Payment Status', 'Placed At'];
+    const rows = filteredOrders.map((o) => [
+      `"${o.orderNumber}"`,
+      `"${o.customer.name}"`,
+      `"${o.customer.phone || ''}"`,
+      `"${o.items.map((i) => `${i.quantity}x ${i.name}`).join('; ')}"`,
+      o.totalAmount.toFixed(2),
+      o.status,
+      o.paymentMethod,
+      o.paymentStatus,
+      `"${new Date(o.placedAt).toLocaleString()}"`,
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `foodied_orders_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Orders export downloaded as CSV', 'success', 'Report Ready');
   };
 
   return (
@@ -347,9 +371,13 @@ export const AdminRecentOrdersPage: React.FC = () => {
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChange={async (orderId, newStatus) => {
-          // await adminApi.updateOrderStatus(orderId, newStatus);
-          // showToast(`Order status updated to ${newStatus}`);
-          // fetchOrders();
+          try {
+            await orderApi.updateOrderStatus(orderId, newStatus);
+            showToast(`Order status updated to ${newStatus}`, 'success', 'Status Updated');
+            fetchOrders();
+          } catch (err) {
+            showToast('Failed to update order status', 'error');
+          }
         }}
       />
     </AdminLayout>

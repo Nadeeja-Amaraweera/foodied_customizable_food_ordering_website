@@ -6,6 +6,7 @@ import {
   History,
   UtensilsCrossed,
   Settings,
+  Users,
   LogOut,
   Flame,
   Store,
@@ -53,6 +54,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       name: 'Products & Menu',
       path: '/admin/products',
       icon: <UtensilsCrossed className="w-5 h-5" />,
+    },
+    {
+      name: 'Customers & Users',
+      path: '/admin/customers',
+      icon: <Users className="w-5 h-5" />,
     },
     {
       name: 'Settings',

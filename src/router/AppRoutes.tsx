@@ -14,6 +14,7 @@ import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
 import { AdminIncomingOrdersPage } from "../pages/admin/AdminIncomingOrdersPage";
 import { AdminRecentOrdersPage } from "../pages/admin/AdminRecentOrdersPage";
 import { AdminProductsPage } from "../pages/admin/AdminProductsPage";
+import { AdminCustomersPage } from "../pages/admin/AdminCustomersPage";
 import { AdminSettingsPage } from "../pages/admin/AdminSettingsPage";
 
 export type RequiredAuthProps = {
@@ -153,6 +154,15 @@ function Router() {
           element={
             <AdminRequiredAuth>
               <AdminProductsPage />
+            </AdminRequiredAuth>
+          }
+        />
+
+        <Route
+          path="/admin/customers"
+          element={
+            <AdminRequiredAuth>
+              <AdminCustomersPage />
             </AdminRequiredAuth>
           }
         />
