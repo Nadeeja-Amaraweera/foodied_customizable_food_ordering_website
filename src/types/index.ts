@@ -31,6 +31,7 @@ export type HeroDish = {
 export type CartItem = {
   cartId: string;
   id: string;
+  productId?: string;
   name: string;
   basePrice: number;
   unitPrice: number;
@@ -41,6 +42,13 @@ export type CartItem = {
   addons: string[];
   dietary: string[];
   notes: string;
+  customization?: {
+    size?: string;
+    spiceLevel?: string;
+    extras?: string[];
+    dietary?: string[];
+    specialInstructions?: string;
+  };
 };
 
 export type Chef = {

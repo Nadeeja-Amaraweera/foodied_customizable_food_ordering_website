@@ -18,7 +18,7 @@ import { OrderCard } from '../../components/admin/OrderCard';
 import { OrderDetailsModal } from '../../components/admin/OrderDetailsModal';
 import { Modal } from '../../components/admin/Modal';
 import { Button } from '../../components/admin/Button';
-// import { adminApi } from '../../services/adminApi';
+import { orderApi } from '../../services/orderApi';
 import { AdminOrder, OrderStatus } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
 
@@ -39,15 +39,24 @@ export const AdminIncomingOrdersPage: React.FC = () => {
   const [rejectReason, setRejectReason] = useState('Kitchen at maximum capacity / item sold out');
 
   const fetchOrders = async () => {
-    // setIsLoading(true);
-    // try {
-    //   const data = await adminApi.getOrders();
-    //   setOrders(data);
-    // } catch (err) {
-    //   showToast('Failed to load incoming orders', 'error');
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    setIsLoading(true);
+    try {
+      const data = await orderApi.getOrders();
+      const mapped: AdminOrder[] = data.map((o: any) => ({
+        ...o,
+        id: o._id || o.id,
+        placedAt: o.placedAt ? new Date(o.placedAt).toISOString() : new Date().toISOString(),
+        timeAgo: o.placedAt
+          ? `${Math.max(1, Math.round((Date.now() - new Date(o.placedAt).getTime()) / 60000))} mins ago`
+          : 'Just now',
+        estimatedReadyTime: o.estimatedReadyTime || '15-20 mins',
+      }));
+      setOrders(mapped);
+    } catch (err) {
+      showToast('Failed to load incoming orders', 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -94,34 +103,34 @@ export const AdminIncomingOrdersPage: React.FC = () => {
   const preparingOrdersCount = orders.filter((o) => o.status === 'preparing').length;
 
   const handleConfirmOrder = async (order: AdminOrder) => {
-    // try {
-    //   const nextStatus: OrderStatus = order.status === 'new' ? 'preparing' : 'confirmed';
-    //   await adminApi.updateOrderStatus(order.id, nextStatus);
-    //   showToast(
-    //     `Order ${order.orderNumber} successfully confirmed! Moved to ${nextStatus}.`,
-    //     'success',
-    //     'Order Confirmed'
-    //   );
-    //   fetchOrders();
-    // } catch (err) {
-    //   showToast('Failed to update order status', 'error');
-    // }
+    try {
+      const nextStatus: OrderStatus = order.status === 'new' ? 'preparing' : 'confirmed';
+      await orderApi.updateOrderStatus(order.id, nextStatus);
+      showToast(
+        `Order ${order.orderNumber} successfully confirmed! Moved to ${nextStatus}.`,
+        'success',
+        'Order Confirmed'
+      );
+      fetchOrders();
+    } catch (err) {
+      showToast('Failed to update order status', 'error');
+    }
   };
 
   const handleConfirmReject = async () => {
-    // if (!rejectOrderTarget) return;
-    // try {
-    //   await adminApi.updateOrderStatus(rejectOrderTarget.id, 'cancelled');
-    //   showToast(
-    //     `Order ${rejectOrderTarget.orderNumber} has been rejected. Customer notified.`,
-    //     'warning',
-    //     'Order Cancelled'
-    //   );
-    //   setRejectOrderTarget(null);
-    //   fetchOrders();
-    // } catch (err) {
-    //   showToast('Failed to reject order', 'error');
-    // }
+    if (!rejectOrderTarget) return;
+    try {
+      await orderApi.updateOrderStatus(rejectOrderTarget.id, 'cancelled');
+      showToast(
+        `Order ${rejectOrderTarget.orderNumber} has been rejected. Customer notified.`,
+        'warning',
+        'Order Cancelled'
+      );
+      setRejectOrderTarget(null);
+      fetchOrders();
+    } catch (err) {
+      showToast('Failed to reject order', 'error');
+    }
   };
 
   return (

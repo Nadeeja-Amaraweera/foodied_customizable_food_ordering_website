@@ -19,7 +19,7 @@ export const Footer: React.FC<FooterProps> = ({ onToast, onNewsletterSubscribe }
   };
 
   return (
-    <footer className="bg-[#E5F0DA] mt-16 py-16 px-4 sm:px-8 text-[#1A1A1A]">
+    <footer id="contact" className="bg-[#E5F0DA] mt-16 py-16 px-4 sm:px-8 text-[#1A1A1A] scroll-mt-20">
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         {/* Column 1: Menu */}
         <div>
@@ -33,16 +33,6 @@ export const Footer: React.FC<FooterProps> = ({ onToast, onNewsletterSubscribe }
             <li>
               <a href="#why-choose" className="hover:text-[#558B2F] transition">
                 Why Choose
-              </a>
-            </li>
-            <li>
-              <a href="#special-menu" className="hover:text-[#558B2F] transition">
-                Special Menu
-              </a>
-            </li>
-            <li>
-              <a href="#regular-food" className="hover:text-[#558B2F] transition">
-                Regular Food
               </a>
             </li>
             <li>
@@ -96,13 +86,19 @@ export const Footer: React.FC<FooterProps> = ({ onToast, onNewsletterSubscribe }
           </ul>
         </div>
 
-        {/* Column 3: Contact */}
-        <div>
-          <h4 className="text-lg font-extrabold mb-4">Contact</h4>
+        {/* Column 3: Contact Us Section */}
+        <div id="contact-us" className="scroll-mt-24">
+          <h4 className="text-lg font-extrabold mb-4 text-[#1A1A1A]">Contact Us</h4>
           <ul className="space-y-2.5 text-xs sm:text-sm text-gray-600">
-            <li>+123 456 789</li>
-            <li>Info@Foodied.Com</li>
-            <li>1245, New York, USA</li>
+            <li>
+              <span className="font-semibold text-gray-800">Phone:</span> +123 456 789
+            </li>
+            <li>
+              <span className="font-semibold text-gray-800">Email:</span> Info@Foodied.Com
+            </li>
+            <li>
+              <span className="font-semibold text-gray-800">Address:</span> 1245, New York, USA
+            </li>
           </ul>
         </div>
 

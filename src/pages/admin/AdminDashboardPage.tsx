@@ -20,7 +20,8 @@ import { StatCard } from '../../components/admin/StatCard';
 import { Badge } from '../../components/admin/Badge';
 import { Button } from '../../components/admin/Button';
 import { OrderDetailsModal } from '../../components/admin/OrderDetailsModal';
-// import { adminApi } from '../../services/adminApi';
+import { orderApi } from '../../services/orderApi';
+import { adminProductApi } from '../../services/adminApi';
 import {
   AdminOrder,
   StatMetric,
@@ -47,18 +48,65 @@ export const AdminDashboardPage: React.FC = () => {
   const [activeChartMetric, setActiveChartMetric] = useState<'revenue' | 'orders'>('revenue');
 
   const loadDashboardData = async () => {
-    // try {
-    //   const data = await adminApi.getDashboardMetrics();
-    //   setStats(data.stats);
-    //   setHourlySales(data.hourlySales);
-    //   setCategories(data.categoryDistribution);
-      
-    //   const allOrders = await adminApi.getOrders();
-    //   setRecentOrders(allOrders.slice(0, 5));
-    //   setIncomingOrders(allOrders.filter((o) => o.status === 'new' || o.status === 'preparing'));
-    // } catch (err) {
-    //   console.error('Failed to load dashboard data', err);
-    // }
+    try {
+      const [allOrders, products] = await Promise.all([
+        orderApi.getOrders().catch(() => []),
+        adminProductApi.getProducts().catch(() => []),
+      ]);
+
+      const mappedOrders: AdminOrder[] = allOrders.map((o: any) => ({
+        ...o,
+        id: o._id || o.id,
+        placedAt: o.placedAt ? new Date(o.placedAt).toISOString() : new Date().toISOString(),
+        timeAgo: o.placedAt
+          ? `${Math.max(1, Math.round((Date.now() - new Date(o.placedAt).getTime()) / 60000))} mins ago`
+          : 'Just now',
+        estimatedReadyTime: o.estimatedReadyTime || '15-20 mins',
+      }));
+
+      setRecentOrders(mappedOrders.slice(0, 5));
+      setIncomingOrders(mappedOrders.filter((o) => o.status === 'new' || o.status === 'preparing'));
+
+      const totalRevenue = mappedOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+      const pendingCount = mappedOrders.filter((o) => o.status === 'new' || o.status === 'preparing').length;
+
+      setStats([
+        {
+          title: 'Total Orders',
+          value: mappedOrders.length,
+          change: '+12.5%',
+          isPositive: true,
+          subtitle: 'All orders recorded',
+          iconName: 'shopping-bag',
+        },
+        {
+          title: 'Pending Orders',
+          value: pendingCount,
+          change: pendingCount > 0 ? `${pendingCount} active` : 'Queue clear',
+          isPositive: pendingCount === 0,
+          subtitle: 'Needs kitchen action',
+          iconName: 'clock',
+        },
+        {
+          title: 'Products Available',
+          value: products.length,
+          change: 'In catalog',
+          isPositive: true,
+          subtitle: 'Active menu items',
+          iconName: 'utensils',
+        },
+        {
+          title: 'Total Revenue',
+          value: `$${totalRevenue.toFixed(2)}`,
+          change: '+18.2%',
+          isPositive: true,
+          subtitle: 'Cumulative sales',
+          iconName: 'dollar-sign',
+        },
+      ]);
+    } catch (err) {
+      console.error('Failed to load dashboard data', err);
+    }
   };
 
   useEffect(() => {
@@ -66,17 +114,17 @@ export const AdminDashboardPage: React.FC = () => {
   }, []);
 
   const handleConfirmOrder = async (order: AdminOrder) => {
-    // try {
-    //   await adminApi.updateOrderStatus(order.id, 'preparing');
-    //   showToast(
-    //     `Order ${order.orderNumber} confirmed! Kitchen ticket printed.`,
-    //     'success',
-    //     'Order Confirmed'
-    //   );
-    //   loadDashboardData();
-    // } catch (err) {
-    //   showToast('Failed to confirm order', 'error');
-    // }
+    try {
+      await orderApi.updateOrderStatus(order.id, 'preparing');
+      showToast(
+        `Order ${order.orderNumber} confirmed! Kitchen ticket printed.`,
+        'success',
+        'Order Confirmed'
+      );
+      loadDashboardData();
+    } catch (err) {
+      showToast('Failed to update order status', 'error');
+    }
   };
 
   // Max value for SVG chart scaling

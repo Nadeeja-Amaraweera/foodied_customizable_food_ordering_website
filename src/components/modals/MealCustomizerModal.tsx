@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { X, Flame, Check, Minus, Plus } from 'lucide-react';
 import { MenuItem } from '../../types';
 
@@ -37,14 +37,59 @@ export const MealCustomizerModal: React.FC<MealCustomizerModalProps> = ({
   onQuantityChange,
   unitPrice,
   onAddToCart,
-  onClose
+  onClose,
 }) => {
   if (!item) return null;
+
+  // Available portion sizes from DB or standard fallbacks
+  const sizesList = useMemo(() => {
+    if (item.customization?.sizes && item.customization.sizes.length > 0) {
+      return item.customization.sizes;
+    }
+    return [
+      { name: 'Regular', priceModifier: 0 },
+      { name: 'Large', priceModifier: 3.0 },
+      { name: 'Family', priceModifier: 6.0 },
+    ];
+  }, [item.customization?.sizes]);
+
+  // Available extras / add-on toppings from DB
+  const extrasList = useMemo(() => {
+    if (item.customization?.extras && item.customization.extras.length > 0) {
+      return item.customization.extras;
+    }
+    if (item.defaultAddons && item.defaultAddons.length > 0) {
+      return item.defaultAddons.map((addon) => {
+        const match = addon.match(/^(.+?)\s*\(\+\$([\d.]+)\)$/);
+        if (match) {
+          return { name: match[1].trim(), priceModifier: parseFloat(match[2]) };
+        }
+        return { name: addon, priceModifier: 0 };
+      });
+    }
+    return [
+      { name: 'Extra Cheddar Cheese', priceModifier: 1.5 },
+      { name: 'Crispy Bacon', priceModifier: 2.0 },
+      { name: 'Garlic Aioli', priceModifier: 0.8 },
+    ];
+  }, [item.customization?.extras, item.defaultAddons]);
+
+  // Available spice levels
+  const spiceList = useMemo(() => {
+    if (item.customization?.spiceLevels && item.customization.spiceLevels.length > 0) {
+      return item.customization.spiceLevels;
+    }
+    return item.isDessert
+      ? ['Light Sweet', 'Regular Sweet', 'Extra Rich', 'Sugar-Free']
+      : ['Mild', 'Medium', 'Spicy', 'Extra Hot'];
+  }, [item.customization?.spiceLevels, item.isDessert]);
+
+  const totalPrice = Number((unitPrice * quantity).toFixed(2));
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-gray-100 my-8 animate-in fade-in zoom-in-95 duration-200">
-        {/* Top Dish Banner with Floating-In & Zero-Gravity Dish Animation */}
+        {/* Top Dish Banner with Zero-Gravity Dish Animation */}
         <div className="relative h-48 bg-[#E8F3DC] flex items-center justify-center p-6 overflow-hidden">
           <div className="animate-zero-gravity">
             <img
@@ -66,39 +111,62 @@ export const MealCustomizerModal: React.FC<MealCustomizerModalProps> = ({
         </div>
 
         <div className="p-6 max-h-[70vh] overflow-y-auto space-y-5">
+          {/* Header Title + Dynamic Total Unit Price */}
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="text-2xl font-black text-[#1A1A1A]">{item.name}</h3>
               <p className="text-xs text-gray-500 mt-1">{item.description}</p>
             </div>
             <div className="text-right shrink-0">
-              <span className="text-xs text-gray-400 block">Base Price</span>
-              <span className="text-xl font-black text-[#7CB342]">
-                ${Number(item.price).toFixed(2)}
+              <span className="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">
+                Current Unit Price
+              </span>
+              <span className="text-2xl font-black text-[#7CB342]">
+                ${unitPrice.toFixed(2)}
+              </span>
+              <span className="text-[11px] text-gray-400 block mt-0.5">
+                (Base: ${Number(item.price).toFixed(2)})
               </span>
             </div>
           </div>
 
-          {/* 1. Portion Size Selector */}
+          {/* 1. Portion Size Selector with Dynamic Additional Prices */}
           <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-gray-700 mb-2">
-              1. Select Portion Size
-            </label>
-            <div className="grid grid-cols-3 gap-2.5">
-              {['Regular', 'Large', 'Family'].map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => onPortionSizeChange(size)}
-                  className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition flex flex-col items-center cursor-pointer ${
-                    portionSize === size
-                      ? 'border-[#8BC34A] bg-[#F4F9EE] text-[#558B2F] ring-2 ring-[#8BC34A]/30'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                  }`}
-                >
-                  <span>{size}</span>
-                </button>
-              ))}
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-gray-700">
+                1. Select Portion Size
+              </label>
+              <span className="text-[10px] font-medium text-gray-400">
+                Updates price dynamically
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              {sizesList.map((sizeObj) => {
+                const isSelected = portionSize.toLowerCase() === sizeObj.name.toLowerCase();
+                return (
+                  <button
+                    key={sizeObj.name}
+                    type="button"
+                    onClick={() => onPortionSizeChange(sizeObj.name)}
+                    className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition flex flex-col items-center cursor-pointer ${
+                      isSelected
+                        ? 'border-[#8BC34A] bg-[#F4F9EE] text-[#558B2F] ring-2 ring-[#8BC34A]/30 shadow-xs'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <span>{sizeObj.name}</span>
+                    <span
+                      className={`text-[11px] mt-0.5 font-bold ${
+                        sizeObj.priceModifier > 0 ? 'text-[#558B2F]' : 'text-gray-400 font-normal'
+                      }`}
+                    >
+                      {sizeObj.priceModifier > 0
+                        ? `+$${Number(sizeObj.priceModifier).toFixed(2)}`
+                        : 'Standard (+0.00)'}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -108,56 +176,68 @@ export const MealCustomizerModal: React.FC<MealCustomizerModalProps> = ({
               <Flame className="w-3.5 h-3.5 text-orange-500" />
               2. {item.isDessert ? 'Sweetness Level' : 'Spice & Seasoning Level'}
             </label>
-            <div className="grid grid-cols-4 gap-2">
-              {(item.isDessert
-                ? ['Light Sweet', 'Regular Sweet', 'Extra Rich', 'Sugar-Free']
-                : ['Mild', 'Medium', 'Spicy', 'Extra Hot']
-              ).map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  onClick={() => onSpiceLevelChange(level)}
-                  className={`py-2 px-2 rounded-xl border text-xs font-semibold transition cursor-pointer ${
-                    spiceLevel === level
-                      ? 'bg-[#8BC34A] text-white border-[#8BC34A]'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {level}
-                </button>
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {spiceList.map((level) => {
+                const isSelected = spiceLevel.toLowerCase() === level.toLowerCase();
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => onSpiceLevelChange(level)}
+                    className={`py-2 px-2 rounded-xl border text-xs font-semibold transition cursor-pointer text-center ${
+                      isSelected
+                        ? 'bg-[#8BC34A] text-white border-[#8BC34A] shadow-xs'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {level}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* 3. Custom Add-On Toppings & Extras */}
+          {/* 3. Custom Add-On Toppings & Extras with Real-Time Price Additions */}
           <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-gray-700 mb-2">
-              3. Customize Add-On Toppings &amp; Extras
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-gray-700">
+                3. Customize Add-On Toppings &amp; Extras
+              </label>
+              <span className="text-[10px] text-gray-400 font-medium">
+                Priced per item
+              </span>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {(item.defaultAddons || []).map((addon) => {
-                const isChecked = selectedAddons.includes(addon);
+              {extrasList.map((extraObj) => {
+                const isChecked = selectedAddons.some(
+                  (a) => a.toLowerCase() === extraObj.name.toLowerCase()
+                );
                 return (
                   <button
-                    key={addon}
+                    key={extraObj.name}
                     type="button"
-                    onClick={() => onToggleAddon(addon)}
+                    onClick={() => onToggleAddon(extraObj.name)}
                     className={`flex items-center justify-between p-2.5 rounded-xl border text-left text-xs transition cursor-pointer ${
                       isChecked
-                        ? 'border-[#8BC34A] bg-[#F4F9EE] font-semibold text-[#1A1A1A]'
+                        ? 'border-[#8BC34A] bg-[#F4F9EE] font-semibold text-[#1A1A1A] shadow-xs'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <div
-                        className={`w-4 h-4 rounded flex items-center justify-center ${
+                        className={`w-4 h-4 rounded flex items-center justify-center transition ${
                           isChecked ? 'bg-[#8BC34A] text-white' : 'border border-gray-300'
                         }`}
                       >
                         {isChecked && <Check className="w-3 h-3" />}
                       </div>
-                      <span>{addon}</span>
+                      <span>{extraObj.name}</span>
                     </div>
+                    <span className="text-[11px] font-bold text-[#558B2F] shrink-0 ml-2">
+                      {extraObj.priceModifier > 0
+                        ? `+$${Number(extraObj.priceModifier).toFixed(2)}`
+                        : 'Free'}
+                    </span>
                   </button>
                 );
               })}
@@ -228,15 +308,15 @@ export const MealCustomizerModal: React.FC<MealCustomizerModalProps> = ({
             </button>
           </div>
 
-          {/* Add Customized Item Button (Ready for Backend API) */}
+          {/* Add Customized Item Button with Dynamic Live Price */}
           <button
             type="button"
             onClick={onAddToCart}
             className="flex-1 py-3 px-6 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white font-bold text-sm shadow-lg transition flex items-center justify-between cursor-pointer"
           >
             <span>Add Customized Meal</span>
-            <span className="bg-white/20 px-3 py-0.5 rounded-full">
-              ${(unitPrice * quantity).toFixed(2)}
+            <span className="bg-white/20 px-3 py-0.5 rounded-full font-black">
+              ${totalPrice.toFixed(2)}
             </span>
           </button>
         </div>
@@ -245,3 +325,4 @@ export const MealCustomizerModal: React.FC<MealCustomizerModalProps> = ({
   );
 };
 
+export default MealCustomizerModal;

@@ -12,6 +12,7 @@ export interface CartDrawerProps {
   onRemoveItem?: (cartId: string) => void;
   onUpdateQuantity?: (cartId: string, quantity: number) => void;
   onCheckout?: () => void;
+  isSubmitting?: boolean;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -23,7 +24,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onResetOrderSuccess,
   onRemoveItem,
   onUpdateQuantity,
-  onCheckout
+  onCheckout,
+  isSubmitting = false
 }) => {
   if (!isOpen) return null;
 
@@ -163,10 +165,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
             <button
               type="button"
+              disabled={isSubmitting}
               onClick={onCheckout}
-              className="w-full py-3.5 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white font-bold text-sm shadow-lg transition cursor-pointer"
+              className={`w-full py-3.5 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white font-bold text-sm shadow-lg transition cursor-pointer flex items-center justify-center gap-2 ${
+                isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              Confirm &amp; Place Order (${subtotal.toFixed(2)})
+              {isSubmitting ? 'Validating Price & Placing Order...' : `Confirm & Place Order ($${subtotal.toFixed(2)})`}
             </button>
           </div>
         )}

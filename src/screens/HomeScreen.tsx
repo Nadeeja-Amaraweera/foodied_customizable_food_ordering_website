@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { MenuItem, HeroDish, CartItem, Chef, FloatingClone, User } from '../types';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
@@ -8,14 +8,10 @@ import { FloatingDishClone, StoreToast } from '../components/StoreOverlays';
 import { HeroSection } from '../components/sections/HeroSection';
 import { FeaturedSection } from '../components/sections/FeaturedSection';
 import { WhyChooseUsSection } from '../components/sections/WhyChooseUsSection';
-import { SpecialMenuSection } from '../components/sections/SpecialMenuSection';
-import { RegularFoodSection } from '../components/sections/RegularFoodSection';
 import { ChefsSection } from '../components/sections/ChefsSection';
 import { MealCustomizerModal } from '../components/modals/MealCustomizerModal';
-import { CartDrawer } from '../components/cart/CartDrawer';
 import useAuth from '../hooks/useAuth';
-import { adminProductApi } from '../services/adminApi';
-import { AdminProduct } from '../data/adminMockData';
+import { useCart } from '../context/CartContext';
 
 export interface HomeScreenProps {
   initialMenuItems?: MenuItem[];
@@ -29,42 +25,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   initialChefs = []
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const auth = useAuth();
+  const { addToCart, cartTotalCount } = useCart();
 
-  // Application Data States (Ready for Backend API Integration)
+  // Smooth scroll to Contact section if landing with hash
+  useEffect(() => {
+    if (location.hash === '#contact-us' || location.hash === '#contact') {
+      setTimeout(() => {
+        const target = document.getElementById('contact-us') || document.getElementById('contact');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+    }
+  }, [location.hash, location.pathname]);
+
+  // Application Data States
   const [menuItems] = useState<MenuItem[]>(initialMenuItems);
-  const [backendProducts, setBackendProducts] = useState<AdminProduct[]>([]);
-  const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [heroDishes] = useState<HeroDish[]>(initialHeroDishes);
   const [activeHeroDish, setActiveHeroDish] = useState<HeroDish | null>(null);
   const [chefs] = useState<Chef[]>(initialChefs);
-
-  // Fetch available products from MongoDB backend API for "OUR REGULAR FOOD"
-  useEffect(() => {
-    let isMounted = true;
-    const fetchRegularProducts = async () => {
-      try {
-        setIsProductsLoading(true);
-        const data = await adminProductApi.getProducts();
-        if (isMounted) {
-          // Filter only products marked as available (isAvailable === true)
-          const available = (data || []).filter((p) => p.isAvailable === true);
-          setBackendProducts(available);
-        }
-      } catch (err) {
-        console.error('Failed to load regular food products from backend:', err);
-      } finally {
-        if (isMounted) {
-          setIsProductsLoading(false);
-        }
-      }
-    };
-
-    fetchRegularProducts();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   // Floating-In Animation States & Controls
   const [heroAnimKey, setHeroAnimKey] = useState(1);
@@ -82,16 +63,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [specialNotes, setSpecialNotes] = useState('');
   const [itemQty, setItemQty] = useState(1);
 
-  // Shopping Cart State (Ready for Backend Cart API)
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [orderPlacedSuccess, setOrderPlacedSuccess] = useState(false);
-
-  // Search & Filter State
+  // Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [specialPageDot, setSpecialPageDot] = useState(0);
-  const [regularCategoryFilter, setRegularCategoryFilter] = useState('All');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Current user derived from AuthContext
@@ -162,19 +136,64 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       setTimeout(() => setSelectedCardId(null), 700);
     }
     setCustomizingItem(item);
-    setPortionSize('Regular');
-    setSpiceLevel(item.isDessert ? 'Regular Sweet' : 'Medium');
+
+    const initialSize = item.customization?.sizes?.[0]?.name || 'Regular';
+    setPortionSize(initialSize);
+
+    const initialSpice =
+      item.customization?.spiceLevels?.[0] ||
+      (item.isDessert ? 'Regular Sweet' : 'Medium');
+    setSpiceLevel(initialSpice);
+
     setSelectedAddons([]);
     setDietaryTags([]);
     setSpecialNotes('');
     setItemQty(1);
   };
 
-  // Base price representation
+  // 1. Dynamic Selected Size Modifier
+  const currentSizeModifier = useMemo(() => {
+    if (!customizingItem) return 0;
+    const sizes = customizingItem.customization?.sizes;
+    if (sizes && sizes.length > 0) {
+      const match = sizes.find(
+        (s) => s.name.trim().toLowerCase() === portionSize.trim().toLowerCase()
+      );
+      return match ? Number(match.priceModifier) || 0 : 0;
+    }
+    if (portionSize.toLowerCase() === 'large') return 3.0;
+    if (portionSize.toLowerCase() === 'family') return 6.0;
+    return 0;
+  }, [customizingItem, portionSize]);
+
+  // 2. Dynamic Total Selected Extras Modifier
+  const currentExtrasModifier = useMemo(() => {
+    if (!customizingItem) return 0;
+    const extras = customizingItem.customization?.extras;
+    if (extras && extras.length > 0) {
+      return selectedAddons.reduce((sum, addonName) => {
+        const cleanName = addonName.replace(/\s*\(\+\$[\d.]+\)$/i, '').trim().toLowerCase();
+        const match = extras.find(
+          (e) =>
+            e.name.trim().toLowerCase() === cleanName ||
+            e.name.trim().toLowerCase() === addonName.trim().toLowerCase()
+        );
+        return sum + (match ? Number(match.priceModifier) || 0 : 0);
+      }, 0);
+    }
+    return selectedAddons.reduce((sum, addonName) => {
+      const match = addonName.match(/\+\$([\d.]+)/);
+      if (match) return sum + parseFloat(match[1]);
+      return sum;
+    }, 0);
+  }, [customizingItem, selectedAddons]);
+
+  // 3. Dynamic Real-Time Calculated Unit Price
   const calculatedUnitPrice = useMemo(() => {
     if (!customizingItem) return 0;
-    return Number(customizingItem.price) || 0;
-  }, [customizingItem]);
+    const base = Number(customizingItem.price) || 0;
+    return Number((base + currentSizeModifier + currentExtrasModifier).toFixed(2));
+  }, [customizingItem, currentSizeModifier, currentExtrasModifier]);
 
   // Add customized item to Cart
   const handleAddToCart = () => {
@@ -182,6 +201,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     const newItem: CartItem = {
       cartId: `${customizingItem.id}-${Date.now()}`,
       id: customizingItem.id,
+      productId: customizingItem.id,
       name: customizingItem.name,
       basePrice: customizingItem.price,
       unitPrice: calculatedUnitPrice,
@@ -191,11 +211,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       spice: spiceLevel,
       addons: [...selectedAddons],
       dietary: [...dietaryTags],
-      notes: specialNotes
+      notes: specialNotes,
+      customization: {
+        size: portionSize,
+        spiceLevel: spiceLevel,
+        extras: [...selectedAddons],
+        dietary: [...dietaryTags],
+        specialInstructions: specialNotes,
+      },
     };
-    setCart((prev) => [...prev, newItem]);
+
+    addToCart(newItem);
     setCustomizingItem(null);
-    showToast(`Added ${customizingItem.name} to your food bag!`);
+    showToast(`Added ${customizingItem.name} ($${calculatedUnitPrice.toFixed(2)}) to your food bag!`);
   };
 
   const handleLogout = () => {
@@ -206,92 +234,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     showToast('You have been logged out.');
   };
 
-  // Filtered sections
+  // Filtered featured items
   const featuredItems = useMemo(
     () =>
       menuItems
         .filter((i) => i.section === 'featured')
         .filter((i) => i.name.toLowerCase().includes(searchQuery.toLowerCase())),
     [menuItems, searchQuery]
-  );
-
-  const specialItems = useMemo(
-    () =>
-      menuItems
-        .filter((i) => i.section === 'special')
-        .filter((i) => i.name.toLowerCase().includes(searchQuery.toLowerCase())),
-    [menuItems, searchQuery]
-  );
-
-  // Dynamic category list derived from backend products
-  const regularCategories = useMemo(() => {
-    const base = ['All', 'Burger', 'Pizza', 'Bowls & Salads', 'Pasta', 'Desserts', 'Beverages'];
-    const present = new Set<string>();
-    backendProducts.forEach((p) => {
-      if (p.category) present.add(p.category);
-    });
-    present.forEach((c) => {
-      if (!base.includes(c)) base.push(c);
-    });
-    return base;
-  }, [backendProducts]);
-
-  // Real backend products mapped to MenuItem format for Regular Food Section
-  const regularItems = useMemo(() => {
-    return backendProducts
-      .map((p) => {
-        const id = p._id || p.id || '';
-        const defaultAddons =
-          p.customization?.extras && p.customization.extras.length > 0
-            ? p.customization.extras.map((e) =>
-                e.priceModifier > 0
-                  ? `${e.name} (+$${Number(e.priceModifier).toFixed(2)})`
-                  : e.name
-              )
-            : ['Extra Cheese (+$1.50)', 'Crispy Bacon (+$2.00)', 'Garlic Aioli (+$0.80)'];
-
-        const menuItem: MenuItem = {
-          id,
-          section: 'regular',
-          name: p.name,
-          price: Number(p.price) || 0,
-          rating: p.rating || 4.9,
-          reviews: 24,
-          category: p.category,
-          isDessert: p.category === 'Desserts',
-          image: p.image,
-          description: p.description,
-          defaultAddons,
-          addonsText: defaultAddons.slice(0, 3).join(', '),
-          isAvailable: p.isAvailable,
-          customization: p.customization
-        };
-        return menuItem;
-      })
-      .filter((i) => {
-        if (regularCategoryFilter === 'All') return true;
-        const filterNorm = regularCategoryFilter.toLowerCase().replace(/s$/, '');
-        const itemCatNorm = (i.category || '').toLowerCase().replace(/s$/, '');
-        return (
-          i.category === regularCategoryFilter ||
-          itemCatNorm === filterNorm ||
-          itemCatNorm.includes(filterNorm)
-        );
-      })
-      .filter((i) => {
-        if (!searchQuery.trim()) return true;
-        const q = searchQuery.toLowerCase();
-        return (
-          i.name.toLowerCase().includes(q) ||
-          (i.description || '').toLowerCase().includes(q)
-        );
-      });
-  }, [backendProducts, regularCategoryFilter, searchQuery]);
-
-  const cartTotalCount = cart.reduce((acc, item) => acc + (item.quantity || 0), 0);
-  const cartSubtotal = cart.reduce(
-    (acc, item) => acc + (item.unitPrice || 0) * (item.quantity || 0),
-    0
   );
 
   return (
@@ -314,7 +263,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         className="hidden md:block w-32 h-32 absolute top-[1560px] -left-8 z-10 opacity-95 -rotate-12"
         flip
       />
-      <FloatingLeaf className="hidden md:block w-28 h-28 absolute bottom-[720px] -right-6 z-10 opacity-90 rotate-45" />
 
       <StoreToast message={toastMessage} />
 
@@ -325,7 +273,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         currentUser={currentUser}
         onSearchToggle={() => setIsSearchOpen((open) => !open)}
         onSearchChange={setSearchQuery}
-        onCartOpen={() => setIsCartOpen(true)}
+        onCartOpen={() => navigate('/cart')}
         onLogout={handleLogout}
         onAuthNavigate={() => navigate('/login')}
       />
@@ -349,24 +297,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       />
 
       <WhyChooseUsSection />
-
-      <SpecialMenuSection
-        specialItems={specialItems}
-        specialPageDot={specialPageDot}
-        onDotChange={setSpecialPageDot}
-        selectedCardId={selectedCardId}
-        onCustomizeDish={openCustomerCustomizer}
-      />
-
-      <RegularFoodSection
-        regularItems={regularItems}
-        categories={regularCategories}
-        activeCategory={regularCategoryFilter}
-        onCategoryChange={setRegularCategoryFilter}
-        selectedCardId={selectedCardId}
-        onCustomizeDish={openCustomerCustomizer}
-        isLoading={isProductsLoading}
-      />
 
       <ChefsSection chefs={chefs} />
 
@@ -400,25 +330,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         unitPrice={calculatedUnitPrice}
         onAddToCart={handleAddToCart}
         onClose={() => setCustomizingItem(null)}
-      />
-
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cart={cart}
-        subtotal={cartSubtotal}
-        orderPlacedSuccess={orderPlacedSuccess}
-        onResetOrderSuccess={() => setOrderPlacedSuccess(false)}
-        onRemoveItem={(cartId) => setCart((prev) => prev.filter((c) => c.cartId !== cartId))}
-        onUpdateQuantity={(cartId, qty) =>
-          setCart((prev) =>
-            prev.map((c) => (c.cartId === cartId ? { ...c, quantity: qty } : c))
-          )
-        }
-        onCheckout={() => {
-          setOrderPlacedSuccess(true);
-          setCart([]);
-        }}
       />
     </div>
   );

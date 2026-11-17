@@ -19,7 +19,7 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { Badge } from '../../components/admin/Badge';
 import { Button } from '../../components/admin/Button';
 import { OrderDetailsModal } from '../../components/admin/OrderDetailsModal';
-
+import { orderApi } from '../../services/orderApi';
 import { AdminOrder, OrderStatus } from '../../data/adminMockData';
 import { useToast } from '../../context/ToastContext';
 
@@ -38,12 +38,21 @@ export const AdminRecentOrdersPage: React.FC = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const fetchOrders = async () => {
-    // try {
-    //   const data = await adminApi.getOrders();
-    //   setOrders(data);
-    // } catch (err) {
-    //   showToast('Failed to load past orders', 'error');
-    // }
+    try {
+      const data = await orderApi.getOrders();
+      const mapped: AdminOrder[] = data.map((o: any) => ({
+        ...o,
+        id: o._id || o.id,
+        placedAt: o.placedAt ? new Date(o.placedAt).toISOString() : new Date().toISOString(),
+        timeAgo: o.placedAt
+          ? `${Math.max(1, Math.round((Date.now() - new Date(o.placedAt).getTime()) / 60000))} mins ago`
+          : 'Just now',
+        estimatedReadyTime: o.estimatedReadyTime || '15-20 mins',
+      }));
+      setOrders(mapped);
+    } catch (err) {
+      showToast('Failed to load past orders', 'error');
+    }
   };
 
   useEffect(() => {

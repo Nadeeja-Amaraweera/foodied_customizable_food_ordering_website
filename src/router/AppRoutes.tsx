@@ -1,6 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ReactNode } from "react";
 import { HomeScreen } from "../screens/HomeScreen";
+import { MenuPage } from "../pages/MenuPage";
+import { CartPage } from "../pages/CartPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import useAuth from "../hooks/useAuth";
@@ -76,6 +78,22 @@ function Router() {
           element={
             <RequiredAuth roles={["ADMIN", "USER"]}>
               <HomeScreen />
+            </RequiredAuth>
+          }
+        />
+        <Route
+          path="/menu"
+          element={
+            <RequiredAuth roles={["ADMIN", "USER"]}>
+              <MenuPage />
+            </RequiredAuth>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <RequiredAuth roles={["ADMIN", "USER"]}>
+              <CartPage />
             </RequiredAuth>
           }
         />
