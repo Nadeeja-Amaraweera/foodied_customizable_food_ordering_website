@@ -31,9 +31,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const auth = useAuth();
   const { cartTotalCount } = useCart();
 
-  // Smooth scroll to Contact section if landing with hash
+  // Smooth scroll to Contact section if landing with hash or contact route
   useEffect(() => {
-    if (location.hash === '#contact-us' || location.hash === '#contact') {
+    if (
+      location.hash === '#contact-us' ||
+      location.hash === '#contact' ||
+      location.pathname === '/contact-us' ||
+      location.pathname === '/contact'
+    ) {
       setTimeout(() => {
         const target = document.getElementById('contact-us') || document.getElementById('contact');
         if (target) {

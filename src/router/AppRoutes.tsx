@@ -9,6 +9,7 @@ import { ProductCustomizationPage } from "../pages/ProductCustomizationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import { PizzaChatbot } from "../components/chat/PizzaChatbot";
+import { ScrollToTop } from "../components/common/ScrollToTop";
 import useAuth from "../hooks/useAuth";
 
 // Admin Pages
@@ -76,10 +77,29 @@ export const AdminRequiredAuth = ({ children }: { children: JSX.Element }) => {
 function Router() {
   return (
     <BrowserRouter>
+      {/* Route-aware automatic scroll-to-top handler (excludes Contact Us) */}
+      <ScrollToTop />
+
       <Routes>
         {/* Customer Facing Routes */}
         <Route
           path="/"
+          element={
+            <RequiredAuth roles={["ADMIN", "USER"]}>
+              <HomeScreen />
+            </RequiredAuth>
+          }
+        />
+        <Route
+          path="/contact-us"
+          element={
+            <RequiredAuth roles={["ADMIN", "USER"]}>
+              <HomeScreen />
+            </RequiredAuth>
+          }
+        />
+        <Route
+          path="/contact"
           element={
             <RequiredAuth roles={["ADMIN", "USER"]}>
               <HomeScreen />
