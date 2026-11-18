@@ -116,8 +116,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     }
     if (!password) {
       newErrors.password = 'Please enter a password.';
-    } else if (password.length < 4) {
-      newErrors.password = 'Password must be at least 4 characters.';
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters.';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -134,9 +134,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         await register(name.trim(), email.trim(), password);
         navigate('/login');
       }
-    } catch (error: unknown) {
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        (error instanceof Error ? error.message : 'Registration failed. Please try again.');
       setErrors({
-        general: error instanceof Error ? error.message : 'Registration failed. Please try again.'
+        general: errorMessage
       });
     } finally {
       setIsLoading(false);
