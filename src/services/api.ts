@@ -1,8 +1,14 @@
 import axios from "axios";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:3000/api/v1"
+    : "https://foodied-customizable-api-mqdr.vercel.app/api/v1");
+
 const api = axios.create({
-    baseURL: "https://foodied-customizable-api-mqdr.vercel.app/api/v1",
-})
+  baseURL: API_BASE_URL,
+});
 
 const PUBLIC_ENDPOINTS = [
   "/auth/login",
