@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { MenuItem, HeroDish, Chef, FloatingClone, User } from '../types';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
-import { FloatingLeaf } from '../components/common/FloatingLeaf';
 import { FloatingDishClone, StoreToast } from '../components/StoreOverlays';
 import { HeroSection } from '../components/sections/HeroSection';
 import { FeaturedSection } from '../components/sections/FeaturedSection';
@@ -184,25 +183,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     <div className="min-h-screen bg-[#FAFDF7] text-[#1A1A1A] font-sans relative overflow-x-hidden selection:bg-[#8BC34A] selection:text-white">
       <FloatingDishClone clone={floatingClone} />
 
-      {/* Top Organic Green Background Curve matching reference */}
+      {/* Top Organic Green Background Curve with lime/olive gradient tones matching reference */}
       <svg
-        className="hidden md:block absolute top-0 right-0 w-full sm:w-[90%] md:w-[75%] lg:w-[62%] xl:w-[58%] h-[620px] sm:h-[680px] lg:h-[760px] pointer-events-none z-0 overflow-visible transition-all duration-500"
+        className="block absolute top-0 right-0 w-[96%] sm:w-[86%] md:w-[72%] lg:w-[62%] xl:w-[58%] h-[560px] sm:h-[660px] lg:h-[760px] pointer-events-none z-0 overflow-visible transition-all duration-500"
         viewBox="0 0 850 760"
         fill="none"
         preserveAspectRatio="none"
       >
+        <defs>
+          <linearGradient id="heroLimeWave" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8DC63F" />
+            <stop offset="45%" stopColor="#7CB342" />
+            <stop offset="100%" stopColor="#689F38" />
+          </linearGradient>
+        </defs>
         <path
-          d="M 120 0 C 140 180, 240 250, 190 430 C 130 580, 300 700, 850 640 L 850 0 Z"
-          fill="#7CB342"
+          d="M 110 0 C 150 150, 240 260, 180 430 C 120 580, 280 690, 850 630 L 850 0 Z"
+          fill="url(#heroLimeWave)"
         />
       </svg>
-
-      {/* Decorative Floating Leaves on the Page Edges */}
-      <FloatingLeaf className="hidden md:block w-28 h-28 absolute top-[1180px] -right-6 z-10 opacity-95 rotate-12" />
-      <FloatingLeaf
-        className="hidden md:block w-32 h-32 absolute top-[1560px] -left-8 z-10 opacity-95 -rotate-12"
-        flip
-      />
 
       <StoreToast message={toastMessage} />
 

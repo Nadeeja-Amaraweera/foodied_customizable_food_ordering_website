@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ReactNode } from "react";
 import { HomeScreen } from "../screens/HomeScreen";
+import { FoodExperiencePage } from "../pages/FoodExperiencePage";
 import { MenuPage } from "../pages/MenuPage";
 import { CartPage } from "../pages/CartPage";
 import { MyAccountPage } from "../pages/MyAccountPage";
@@ -190,6 +191,15 @@ function Router() {
             <AdminRequiredAuth>
               <AdminSettingsPage />
             </AdminRequiredAuth>
+          }
+        />
+
+        <Route
+          path="/experience"
+          element={
+            <RequiredAuth roles={["ADMIN", "USER"]}>
+              <FoodExperiencePage />
+            </RequiredAuth>
           }
         />
 

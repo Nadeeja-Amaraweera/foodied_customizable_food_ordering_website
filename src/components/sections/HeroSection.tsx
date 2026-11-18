@@ -106,6 +106,64 @@ const DicedTomatoBits: React.FC<{ className?: string }> = ({ className = '' }) =
 
 const BATCH_SIZE = 3;
 
+// Default mini dishes matching the reference image layout
+const DEFAULT_MINI_DISHES: HeroDish[] = [
+  {
+    id: 'mini-1',
+    name: 'Superfood Salad Bowl',
+    price: 14.5,
+    calories: '15 min',
+    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80',
+    desc: 'Fresh garden greens with toasted seeds and citrus vinaigrette',
+  },
+  {
+    id: 'mini-2',
+    name: 'Avocado Egg Brunch Bowl',
+    price: 16.0,
+    calories: '12 min',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80',
+    desc: 'Soft boiled farm eggs with ripe avocado and seasonal grains',
+  },
+  {
+    id: 'mini-3',
+    name: 'Audit Test Gourmet Pasta',
+    price: 19.5,
+    calories: '15-20 min',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80',
+    desc: 'Fresh artisan pasta tossed with aromatic herbs and premium olive oil',
+  },
+  {
+    id: 'mini-4',
+    name: 'Crispy Golden Stacked Pancakes',
+    price: 9.8,
+    calories: '10 min',
+    image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=400&q=80',
+    desc: 'Fluffy buttermilk pancake stack with Canadian maple syrup and berries',
+  },
+  {
+    id: 'mini-5',
+    name: 'Artisan Gourmet Burger',
+    price: 18.5,
+    calories: '18 min',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80',
+    desc: 'Prime Angus beef patty with caramelized onions and melted cheddar',
+  },
+];
+
+// Exact 5 floating positions around the dashed circle matching the reference image:
+// 1. Middle-Left (approx 170° / 9 o'clock)
+// 2. Bottom-Left (approx 135° / 7:30 o'clock)
+// 3. Bottom-Center (approx 90° / 6 o'clock)
+// 4. Bottom-Right (approx 45° / 4:30 o'clock)
+// 5. Middle-Right (approx 10° / 3 o'clock)
+const MINI_CIRCLE_POSITIONS = [
+  { left: '0%', top: '56%', animClass: 'animate-float-mini-1' },
+  { left: '16%', top: '84%', animClass: 'animate-float-mini-2' },
+  { left: '50%', top: '99%', animClass: 'animate-float-mini-3' },
+  { left: '84%', top: '84%', animClass: 'animate-float-mini-4' },
+  { left: '100%', top: '60%', animClass: 'animate-float-mini-5' },
+];
+
 export const HeroSection: React.FC<HeroSectionProps> = ({
   activeHeroDish: externalActiveDish,
   heroDishes: externalHeroDishes,
@@ -184,20 +242,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     if (externalHeroDishes && externalHeroDishes.length > 0) {
       return externalHeroDishes;
     }
-    return [
-      {
-        id: 'fallback-1',
-        name: 'Rainbow Teriyaki Salmon Poké Bowl',
-        price: 15.20,
-        calories: '15-20 min',
-        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80',
-        desc: 'Fresh sushi-grade salmon, avocado roses, edamame, and sesame shoyu bowl.'
-      }
-    ];
+    return DEFAULT_MINI_DISHES;
   }, [products, externalHeroDishes]);
 
+  // Ensure 5 mini dishes are always populated for the 5 positions around the circle
+  const miniDishes: HeroDish[] = useMemo(() => {
+    const list: HeroDish[] = [];
+    for (let i = 0; i < 5; i++) {
+      if (displayDishes[i]) {
+        list.push(displayDishes[i]);
+      } else {
+        list.push(DEFAULT_MINI_DISHES[i]);
+      }
+    }
+    return list;
+  }, [displayDishes]);
+
   // The active featured dish
-  const activeDish = externalActiveDish || internalSelectedDish || displayDishes[0];
+  const activeDish = externalActiveDish || internalSelectedDish || displayDishes[0] || DEFAULT_MINI_DISHES[2];
 
   // Initialize displayed main image when active dish is ready
   useEffect(() => {
@@ -296,36 +358,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section id="home" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-4 pb-16 lg:pt-8 lg:pb-24">
-      {/* Decorative Fresh Leaves on Far Left Edge (matching reference) */}
-      <div className="absolute top-2 -left-4 sm:-left-2 md:-left-4 w-14 sm:w-20 md:w-24 pointer-events-none z-10 opacity-95 select-none">
-        <svg viewBox="0 0 100 180" fill="none" className="w-full h-auto drop-shadow-sm">
-          <path
-            d="M-5 25 C25 25, 75 55, 68 95 C40 100, 15 75, -5 70 Z"
-            fill="#7CB342"
-          />
-          <path
-            d="M-5 25 C28 40, 58 70, 68 95"
-            stroke="#9CCC65"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M-5 85 C30 85, 80 115, 75 155 C45 160, 20 135, -5 125 Z"
-            fill="#689F38"
-          />
-          <path
-            d="M-5 85 C32 100, 65 130, 75 155"
-            stroke="#8BC34A"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M-5 145 C20 148, 50 162, 45 185 C25 185, 5 170, -5 165 Z"
-            fill="#558B2F"
-          />
-        </svg>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
         {/* ========================================================= */}
         {/* LEFT COLUMN: Badge, Big Headline, Description & 2 Buttons */}
@@ -386,213 +418,176 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
 
         {/* ========================================================= */}
-        {/* RIGHT COLUMN: Large Center Bowl + Progressive Thumbnails   */}
+        {/* RIGHT COLUMN: Large Center Circle + Dashed Radar Border + 5 Floating Mini Circles */}
         {/* ========================================================= */}
         <div
           onMouseEnter={handleRequestNextBatch}
           onTouchStart={handleRequestNextBatch}
-          className="lg:col-span-6 flex justify-center items-center relative min-h-[440px] sm:min-h-[500px] lg:min-h-[560px]"
+          className="lg:col-span-6 flex justify-center items-center relative min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] py-4 select-none"
         >
-          {/* Floating Veggie / Garnish Cutouts (animated matching reference) */}
-          <div className="absolute inset-0 pointer-events-none z-15 flex items-center justify-center overflow-visible">
-            <div className="absolute -translate-x-28 -translate-y-48 animate-zero-gravity" style={{ animationDelay: '0.4s' }}>
-              <DicedTomatoBits />
-            </div>
+          {/* Main Orbit Arena Container: Scales responsively across mobile, tablet, and desktop */}
+          <div className="relative flex items-center justify-center w-[330px] h-[330px] sm:w-[410px] sm:h-[410px] md:w-[450px] md:h-[450px] lg:w-[490px] lg:h-[490px] xl:w-[520px] xl:h-[520px]">
+            
+            {/* 1. THIN DASHED WHITE BORDER (Radar / Orbit Circle) */}
+            <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/70 pointer-events-none shadow-xs" />
 
-            <div className="absolute -translate-x-12 -translate-y-44 animate-zero-gravity" style={{ animationDelay: '1.2s' }}>
-              <BitterGourdSlice size={44} rotation={-15} />
-            </div>
-
-            <div className="absolute translate-x-28 -translate-y-48 animate-zero-gravity" style={{ animationDelay: '0.8s' }}>
-              <TomatoWedge size={42} rotation={22} />
-            </div>
-
-            <div className="absolute translate-x-48 -translate-y-36 animate-zero-gravity" style={{ animationDelay: '1.8s' }}>
-              <BitterGourdSlice size={48} rotation={38} />
-            </div>
-          </div>
-
-          {/* Orbit Guideline Arc (Subtle) */}
-          <div className="absolute w-[380px] h-[380px] sm:w-[450px] sm:h-[450px] rounded-full border-2 border-dashed border-white/50 pointer-events-none" />
-
-          {/* MAIN LARGE CENTRAL CIRCULAR FOOD IMAGE */}
-          <div className="relative z-10 flex flex-col items-center">
-            <div
-              key={`main-hero-dish-${animKey}-${activeDish?.id}`}
-              className="animate-dish-float-in relative w-64 h-64 sm:w-80 sm:h-80 md:w-[350px] md:h-[350px] lg:w-[400px] lg:h-[400px] rounded-full p-4 sm:p-5 bg-[#A4D670] shadow-2xl flex items-center justify-center transition-all duration-500 group"
-            >
-              {displayedMainImage && !imageErrorMap[activeDish?.id || ''] ? (
-                <div className="relative w-full h-full rounded-full overflow-hidden">
-                  <img
-                    src={displayedMainImage}
-                    alt={activeDish?.name || 'Featured Meal'}
-                    onError={() => activeDish && handleImageError(activeDish.id)}
-                    loading="eager"
-                    onClick={(e) => {
-                      if (onCustomizeDish && activeDish) {
-                        onCustomizeDish(
-                          {
-                            id: activeDish.id,
-                            name: activeDish.name,
-                            price: activeDish.price,
-                            image: displayedMainImage,
-                            description: activeDish.desc,
-                            isDessert: false,
-                          },
-                          e
-                        );
-                      } else {
-                        navigate('/menu');
-                      }
-                    }}
-                    className={`w-full h-full object-cover rounded-full shadow-inner select-none cursor-pointer transition-transform duration-500 group-hover:scale-105 ${
-                      isMainImagePreloading ? 'opacity-70 filter blur-xs' : 'opacity-100'
-                    }`}
-                  />
-
-                  {/* Preloading spinner overlay if switching to an uncached image */}
-                  {isMainImagePreloading && (
-                    <div className="absolute inset-0 bg-white/40 backdrop-blur-2xs rounded-full flex items-center justify-center">
-                      <Loader2 className="w-8 h-8 animate-spin text-[#558B2F]" />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="w-full h-full rounded-full bg-white/70 flex flex-col items-center justify-center text-gray-500 p-4 text-center">
-                  <Utensils className="w-16 h-16 text-[#558B2F]/60 mb-2" />
-                  <span className="text-xs font-bold text-gray-700">{activeDish?.name || 'Fresh Food Bowl'}</span>
-                </div>
-              )}
-
-              {/* Floating Quick Info Pill on Top-Left of Bowl */}
-              <div className="absolute -top-3 -left-3 sm:-left-5 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-lg border border-[#8BC34A]/40 flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#7CB342] animate-ping" />
-                <div className="text-left">
-                  <p className="text-[11px] font-black text-[#1A1A1A] leading-tight line-clamp-1 max-w-[140px]">
-                    {activeDish?.name || 'Gourmet Dish'}
-                  </p>
-                  <p className="text-[10px] font-bold text-[#558B2F]">
-                    ${Number(activeDish?.price || 0).toFixed(2)} • {activeDish?.calories || 'Ready in 15m'}
-                  </p>
-                </div>
+            {/* 2. FLOATING VEGGIE / GARNISH CUTOUTS (Gentle Bobbing) */}
+            <div className="absolute inset-0 pointer-events-none z-15 flex items-center justify-center overflow-visible">
+              <div
+                className="absolute -translate-x-24 -translate-y-40 sm:-translate-x-28 sm:-translate-y-48 animate-zero-gravity"
+                style={{ animationDelay: '0.4s' }}
+              >
+                <DicedTomatoBits />
               </div>
 
-              {/* Interactive Quick Customize Button on Bottom of Bowl */}
-              {onCustomizeDish && activeDish && (
-                <button
-                  onClick={(e) =>
-                    onCustomizeDish(
-                      {
-                        id: activeDish.id,
-                        name: activeDish.name,
-                        price: activeDish.price,
-                        image: displayedMainImage || activeDish.image,
-                        description: activeDish.desc,
-                        isDessert: false,
-                      },
-                      e
-                    )
-                  }
-                  className="absolute bottom-4 bg-white/95 backdrop-blur-xs text-[#1A1A1A] px-4 py-1.5 rounded-full shadow-lg text-xs font-bold flex items-center gap-1.5 hover:bg-[#7CB342] hover:text-white transition-all cursor-pointer"
-                >
-                  <Sliders className="w-3.5 h-3.5" /> Customize (${Number(activeDish.price).toFixed(2)})
-                </button>
-              )}
+              <div
+                className="absolute -translate-x-10 -translate-y-36 sm:-translate-x-12 sm:-translate-y-44 animate-zero-gravity"
+                style={{ animationDelay: '1.2s' }}
+              >
+                <BitterGourdSlice size={44} rotation={-15} />
+              </div>
+
+              <div
+                className="absolute translate-x-24 -translate-y-40 sm:translate-x-28 sm:-translate-y-48 animate-zero-gravity"
+                style={{ animationDelay: '0.8s' }}
+              >
+                <TomatoWedge size={42} rotation={22} />
+              </div>
+
+              <div
+                className="absolute translate-x-40 -translate-y-30 sm:translate-x-46 sm:-translate-y-36 animate-zero-gravity"
+                style={{ animationDelay: '1.8s' }}
+              >
+                <BitterGourdSlice size={46} rotation={38} />
+              </div>
             </div>
-          </div>
 
-          {/* ========================================================= */}
-          {/* ORBITING CIRCULAR THUMBNAILS (Progressive Batch Arc)       */}
-          {/* ========================================================= */}
-          <div className="hidden lg:block">
-            {visibleThumbnails.map((dish, idx) => {
-              const angleDeg = ARC_ANGLES[idx] ?? 90;
-              const angleRad = (angleDeg * Math.PI) / 180;
-              const x = Math.round(Math.cos(angleRad) * ORBIT_RADIUS);
-              const y = Math.round(Math.sin(angleRad) * ORBIT_RADIUS);
+            {/* 3. LARGE MAIN CIRCLE: Center circular food item with soft shadow and green ring */}
+            <div className="relative z-10 flex flex-col items-center">
+              <div
+                key={`main-hero-dish-${animKey}-${activeDish?.id}`}
+                className="relative w-[230px] h-[230px] sm:w-[290px] sm:h-[290px] md:w-[320px] md:h-[320px] lg:w-[350px] lg:h-[350px] xl:w-[380px] xl:h-[380px] rounded-full p-3.5 sm:p-5 lg:p-6 bg-[#A4D670] shadow-[0_20px_50px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-500 group animate-dish-float-in"
+              >
+                {displayedMainImage && !imageErrorMap[activeDish?.id || ''] ? (
+                  <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-inner">
+                    <img
+                      src={displayedMainImage}
+                      alt={activeDish?.name || 'Featured Meal'}
+                      onError={() => activeDish && handleImageError(activeDish.id)}
+                      loading="eager"
+                      onClick={(e) => {
+                        if (onCustomizeDish && activeDish) {
+                          onCustomizeDish(
+                            {
+                              id: activeDish.id,
+                              name: activeDish.name,
+                              price: activeDish.price,
+                              image: displayedMainImage,
+                              description: activeDish.desc,
+                              isDessert: false,
+                            },
+                            e
+                          );
+                        } else {
+                          navigate('/menu');
+                        }
+                      }}
+                      className={`w-full h-full object-cover rounded-full select-none cursor-pointer transition-transform duration-500 group-hover:scale-105 ${
+                        isMainImagePreloading ? 'opacity-70 filter blur-xs' : 'opacity-100'
+                      }`}
+                    />
 
-              const isCurrent = activeDish?.id === dish.id;
-              const isLoaded = loadedImagesMap[dish.id] || imageMemoryCache.has(dish.image);
+                    {/* Preloading spinner overlay */}
+                    {isMainImagePreloading && (
+                      <div className="absolute inset-0 bg-white/40 backdrop-blur-2xs rounded-full flex items-center justify-center">
+                        <Loader2 className="w-8 h-8 animate-spin text-[#558B2F]" />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full h-full rounded-full bg-white/80 flex flex-col items-center justify-center text-gray-500 p-4 text-center">
+                    <Utensils className="w-14 h-14 text-[#558B2F]/60 mb-2" />
+                    <span className="text-xs font-bold text-gray-700">
+                      {activeDish?.name || 'Gourmet Dish'}
+                    </span>
+                  </div>
+                )}
+
+                {/* 4. FLOATING UI TAG - TOP LEFT */}
+                <div className="absolute -top-3 -left-3 sm:-top-5 sm:-left-6 z-25 bg-white/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xl border border-gray-100/90 flex items-center gap-2 sm:gap-2.5 animate-float-tag-top">
+                  <span className="relative flex h-2.5 w-2.5 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CB342] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#7CB342]" />
+                  </span>
+                  <div className="text-left">
+                    <p className="text-[11px] sm:text-xs font-black text-[#1A1A1A] leading-tight line-clamp-1 max-w-[130px] sm:max-w-[170px]">
+                      {activeDish?.name || 'Audit Test Gourmet Pasta'}
+                    </p>
+                    <p className="text-[10px] sm:text-[11px] font-bold text-[#558B2F]">
+                      ${Number(activeDish?.price || 19.50).toFixed(2)} • {activeDish?.calories || '15-20 min'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 5. FLOATING UI TAG - BOTTOM BUTTON: Customize ($19.50) */}
+                {onCustomizeDish && activeDish && (
+                  <button
+                    type="button"
+                    onClick={(e) =>
+                      onCustomizeDish(
+                        {
+                          id: activeDish.id,
+                          name: activeDish.name,
+                          price: activeDish.price,
+                          image: displayedMainImage || activeDish.image,
+                          description: activeDish.desc,
+                          isDessert: false,
+                        },
+                        e
+                      )
+                    }
+                    className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 z-25 bg-white text-[#1A1A1A] px-4 sm:px-5 py-1.5 sm:py-2 rounded-full shadow-xl border border-gray-100 text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 hover:bg-[#7CB342] hover:text-white transition-all cursor-pointer animate-float-tag-bottom whitespace-nowrap"
+                  >
+                    <Sliders className="w-3.5 h-3.5 text-[#558B2F] group-hover:text-white" />
+                    <span>Customize (${Number(activeDish.price).toFixed(2)})</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 6. FLOATING MINI CIRCLES AROUND THE LARGE CIRCLE (5-6 positions matching reference image) */}
+            {miniDishes.map((mini, idx) => {
+              const pos = MINI_CIRCLE_POSITIONS[idx];
+              if (!pos) return null;
+              const isCurrent = activeDish?.id === mini.id;
 
               return (
                 <button
-                  key={`thumb-${dish.id}-${idx}`}
+                  key={`mini-circle-${mini.id}-${idx}`}
                   type="button"
-                  onClick={() => handleSelectDish(dish, x, y, angleDeg > 90 ? -22 : 22)}
-                  onMouseEnter={handleRequestNextBatch}
+                  onClick={() => handleSelectDish(mini)}
                   style={{
-                    transform: `translate3d(${x}px, ${y}px, 0)`
+                    left: pos.left,
+                    top: pos.top,
                   }}
-                  title={`View "${dish.name}" ($${dish.price.toFixed(2)})`}
-                  className={`absolute z-20 w-16 h-16 xl:w-[72px] xl:h-[72px] rounded-full p-1 bg-white shadow-xl transition-all duration-300 hover:scale-120 hover:z-30 cursor-pointer ${
-                    isCurrent
-                      ? 'ring-4 ring-[#7CB342] ring-offset-2 scale-110 shadow-2xl'
-                      : 'border-2 border-white/90 hover:border-[#7CB342]'
+                  title={`Select "${mini.name}" ($${Number(mini.price).toFixed(2)})`}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-15 sm:h-15 lg:w-[68px] lg:h-[68px] rounded-full p-1 sm:p-1.5 bg-white shadow-[0_8px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.22)] border border-gray-100 hover:scale-115 active:scale-95 transition-all duration-300 cursor-pointer ${pos.animClass} ${
+                    isCurrent ? 'ring-3 sm:ring-4 ring-[#7CB342] ring-offset-2 scale-110 shadow-2xl' : ''
                   }`}
                 >
-                  {/* Progressive Loading Shimmer Placeholder */}
-                  {!isLoaded && !imageErrorMap[dish.id] ? (
-                    <div className="w-full h-full rounded-full bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse flex items-center justify-center">
-                      <Utensils className="w-4 h-4 text-gray-300" />
-                    </div>
-                  ) : dish.image && !imageErrorMap[dish.id] ? (
-                    <img
-                      src={dish.image}
-                      alt={dish.name}
-                      loading="lazy"
-                      onError={() => handleImageError(dish.id)}
-                      className="w-full h-full object-cover rounded-full select-none transition-opacity duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600">
-                      {dish.name.slice(0, 2).toUpperCase()}
-                    </div>
-                  )}
+                  <img
+                    src={mini.image}
+                    alt={mini.name}
+                    loading="lazy"
+                    onError={() => handleImageError(mini.id)}
+                    className="w-full h-full object-cover rounded-full select-none"
+                  />
 
-                  {/* Active Indicator Checkmark */}
+                  {/* Active indicator checkmark */}
                   {isCurrent && (
-                    <span className="absolute -bottom-1 -right-1 bg-[#7CB342] text-white text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center shadow">
+                    <span className="absolute -bottom-1 -right-1 bg-[#7CB342] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
                       ✓
                     </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* ========================================================= */}
-          {/* MOBILE / TABLET THUMBNAILS (Progressive Row)               */}
-          {/* ========================================================= */}
-          <div className="lg:hidden flex flex-wrap justify-center gap-3 mt-8 w-full z-20">
-            {visibleThumbnails.map((dish) => {
-              const isCurrent = activeDish?.id === dish.id;
-              const isLoaded = loadedImagesMap[dish.id] || imageMemoryCache.has(dish.image);
-
-              return (
-                <button
-                  key={`mobile-thumb-${dish.id}`}
-                  onClick={() => handleSelectDish(dish, 0, 80, 0)}
-                  onTouchStart={handleRequestNextBatch}
-                  className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1 bg-white shadow-md transition-all ${
-                    isCurrent ? 'ring-3 ring-[#7CB342] scale-110' : 'border border-gray-200'
-                  }`}
-                >
-                  {!isLoaded && !imageErrorMap[dish.id] ? (
-                    <div className="w-full h-full rounded-full bg-gray-100 animate-pulse flex items-center justify-center">
-                      <Utensils className="w-3.5 h-3.5 text-gray-300" />
-                    </div>
-                  ) : dish.image && !imageErrorMap[dish.id] ? (
-                    <img
-                      src={dish.image}
-                      alt={dish.name}
-                      loading="lazy"
-                      onError={() => handleImageError(dish.id)}
-                      className="w-full h-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <div className="w-full h-full rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600">
-                      {dish.name.slice(0, 2).toUpperCase()}
-                    </div>
                   )}
                 </button>
               );

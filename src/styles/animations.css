@@ -95,3 +95,96 @@
   animation: flyToHeroArc 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+/* Floating / Levitating keyframes for mini circles and UI tags */
+@keyframes floatMiniLevitate1 {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-9px);
+  }
+}
+
+@keyframes floatMiniLevitate2 {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-12px);
+  }
+}
+
+@keyframes floatMiniLevitate3 {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-8px);
+  }
+}
+
+@keyframes floatMiniLevitate4 {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-11px);
+  }
+}
+
+@keyframes floatMiniLevitate5 {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-7px);
+  }
+}
+
+@keyframes floatTagTopLevitate {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes floatTagBottomLevitate {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0px);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-6px);
+  }
+}
+
+.animate-float-mini-1 {
+  animation: floatMiniLevitate1 3.8s ease-in-out infinite;
+}
+
+.animate-float-mini-2 {
+  animation: floatMiniLevitate2 4.4s ease-in-out infinite;
+}
+
+.animate-float-mini-3 {
+  animation: floatMiniLevitate3 3.6s ease-in-out infinite;
+}
+
+.animate-float-mini-4 {
+  animation: floatMiniLevitate4 4.2s ease-in-out infinite;
+}
+
+.animate-float-mini-5 {
+  animation: floatMiniLevitate5 4.0s ease-in-out infinite;
+}
+
+.animate-float-tag-top {
+  animation: floatTagTopLevitate 3.2s ease-in-out infinite;
+}
+
+.animate-float-tag-bottom {
+  animation: floatTagBottomLevitate 3.5s ease-in-out infinite;
+}
+
+

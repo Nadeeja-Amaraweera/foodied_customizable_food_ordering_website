@@ -5,7 +5,6 @@ import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { RegularFoodSection } from '../components/sections/RegularFoodSection';
 import { StoreToast } from '../components/StoreOverlays';
-import { FloatingLeaf } from '../components/common/FloatingLeaf';
 import { adminProductApi } from '../services/adminApi';
 import { AdminProduct } from '../data/adminMockData';
 import { useCart } from '../context/CartContext';
@@ -170,12 +169,6 @@ export const MenuPage: React.FC = () => {
           borderBottomLeftRadius: '60% 80%',
           boxShadow: 'inset 0 -20px 40px rgba(0,0,0,0.02)',
         }}
-      />
-
-      <FloatingLeaf className="hidden md:block w-28 h-28 absolute top-[420px] -right-6 z-10 opacity-90 rotate-12" />
-      <FloatingLeaf
-        className="hidden md:block w-32 h-32 absolute top-[900px] -left-8 z-10 opacity-90 -rotate-12"
-        flip
       />
 
       <StoreToast message={toastMessage} />
