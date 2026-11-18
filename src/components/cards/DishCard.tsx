@@ -105,14 +105,14 @@ export const DishCard: React.FC<DishCardProps> = ({
         </p>
 
         {/* Price Pill + Buy Now / Customize Pill Button */}
-        <div className="mt-auto w-full flex items-center justify-between gap-3 pt-3 border-t border-gray-100">
-          <span className="px-4 py-1.5 rounded-full border border-gray-400 text-xs font-bold text-[#1A1A1A]">
+        <div className="mt-auto w-full flex items-center justify-between gap-2 sm:gap-3 pt-3 border-t border-gray-100">
+          <span className="px-3 sm:px-4 py-1.5 rounded-full border border-gray-400 text-xs font-bold text-[#1A1A1A] shrink-0">
             ${Number(item.price).toFixed(2)}
           </span>
 
           <button
             onClick={() => onCustomize(item)}
-            className="px-5 py-2 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white text-xs font-semibold transition shadow-sm"
+            className="px-3.5 sm:px-5 py-2 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white text-xs font-semibold transition shadow-sm shrink-0"
           >
             Buy Now
           </button>
@@ -162,14 +162,14 @@ export const DishCard: React.FC<DishCardProps> = ({
       </p>
 
       {/* Price Pill + Buy Now / Customize Pill Button */}
-      <div className="mt-auto w-full flex items-center justify-between gap-3 px-2">
-        <span className="px-5 py-1.5 rounded-full border border-gray-500 text-xs font-bold text-[#1A1A1A]">
+      <div className="mt-auto w-full flex items-center justify-between gap-2 sm:gap-3 px-1 sm:px-2">
+        <span className="px-3 sm:px-5 py-1.5 rounded-full border border-gray-500 text-xs font-bold text-[#1A1A1A] shrink-0">
           ${Number(item.price).toFixed(2)}
         </span>
 
         <button
           onClick={() => onCustomize(item)}
-          className="px-6 py-2 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white text-xs font-bold transition shadow-sm"
+          className="px-4 sm:px-6 py-2 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white text-xs font-bold transition shadow-sm shrink-0"
         >
           Buy Now
         </button>

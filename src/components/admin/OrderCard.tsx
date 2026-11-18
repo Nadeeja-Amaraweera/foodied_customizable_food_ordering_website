@@ -103,9 +103,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({
           </div>
 
           <div className="space-y-2.5">
-            {order.items.map((item) => (
+            {order.items.map((item, idx) => (
               <div
-                key={item.id}
+                key={item.id || (item as any)._id || `${item.productId || item.name || 'item'}-${idx}`}
                 className="p-3 rounded-xl bg-orange-50/30 border border-orange-100/50 flex flex-col gap-2 transition-colors hover:bg-orange-50/60"
               >
                 <div className="flex items-start justify-between gap-2">
@@ -148,7 +148,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                   {item.customization.extras &&
                     item.customization.extras.map((extra, idx) => (
                       <span
-                        key={idx}
+                        key={`${extra}-${idx}`}
                         className="inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 shadow-xs"
                       >
                         + {extra}

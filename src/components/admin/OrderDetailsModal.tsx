@@ -100,8 +100,11 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           </h5>
 
           <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-soft-sm">
-            {order.items.map((item) => (
-              <div key={item.id} className="p-4 flex flex-col sm:flex-row gap-4 hover:bg-gray-50/50 transition-colors">
+            {order.items.map((item, idx) => (
+              <div
+                key={item.id || (item as any)._id || `${item.productId || item.name || 'item'}-${idx}`}
+                className="p-4 flex flex-col sm:flex-row gap-4 hover:bg-gray-50/50 transition-colors"
+              >
                 <img
                   src={item.image}
                   alt={item.name}

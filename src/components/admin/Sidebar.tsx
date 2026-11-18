@@ -24,7 +24,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile,
   onCloseMobile,
-  newOrdersCount = 2,
+  newOrdersCount = 0,
 }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -42,8 +42,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       name: 'Incoming Orders',
       path: '/admin/orders/incoming',
       icon: <BellRing className="w-5 h-5" />,
-      badge: newOrdersCount > 0 ? `${newOrdersCount} NEW` : undefined,
-      pulse: newOrdersCount > 0,
     },
     {
       name: 'Recent Orders',
@@ -131,21 +129,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                   <span>{item.name}</span>
                 </div>
-
-                {item.badge && (
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                      isActive
-                        ? 'bg-white text-primary'
-                        : 'bg-rose-500 text-white'
-                    }`}
-                  >
-                    {item.pulse && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-ping" />
-                    )}
-                    {item.badge}
-                  </span>
-                )}
               </>
             )}
           </NavLink>

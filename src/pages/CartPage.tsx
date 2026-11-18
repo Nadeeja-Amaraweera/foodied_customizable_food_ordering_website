@@ -266,14 +266,14 @@ export const CartPage: React.FC = () => {
               {cart.map((item) => (
                 <div
                   key={item.cartId}
-                  className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between transition hover:shadow-md"
+                  className="bg-white rounded-2xl p-3.5 sm:p-5 border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center justify-between transition hover:shadow-md"
                 >
                   {/* Dish Thumbnail + Information */}
-                  <div className="flex gap-4 items-start min-w-0 flex-1">
+                  <div className="flex gap-3 sm:gap-4 items-start min-w-0 flex-1 w-full">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-20 h-20 rounded-2xl object-cover ring-2 ring-[#8BC34A] shrink-0"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-[#8BC34A] shrink-0"
                     />
 
                     <div className="min-w-0 flex-1">
@@ -368,7 +368,7 @@ export const CartPage: React.FC = () => {
             </div>
 
             {/* Right Column: Order Summary & Checkout Card */}
-            <div className="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-xl space-y-6 sticky top-24">
+            <div className="lg:col-span-5 bg-white rounded-3xl p-4 sm:p-7 border border-gray-100 shadow-xl space-y-5 sm:space-y-6 lg:sticky lg:top-24">
               <div>
                 <h3 className="text-lg font-black text-[#1A1A1A]">Order Summary</h3>
                 <p className="text-xs text-gray-400 mt-0.5">

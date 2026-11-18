@@ -19,8 +19,8 @@ import { useToast } from '../../context/ToastContext';
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('nadeeja@gmail.com');
-  const [password, setPassword] = useState('123456');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
@@ -50,36 +50,6 @@ export const AdminLoginPage: React.FC = () => {
 
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Admin login failed. Please check credentials.';
-      showToast(msg, 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickDemoLogin = async () => {
-    setEmail('nadeeja@gmail.com');
-    setPassword('123456');
-    setIsLoading(true);
-
-    try {
-      const res = await adminLogin('nadeeja@gmail.com', '123456');
-
-      localStorage.setItem('ACCESS_TOKEN', res.access_token);
-      localStorage.setItem('REFRESH_TOKEN', res.refresh_token);
-
-      auth.setUser({
-        _id: res.id,
-        id: res.id,
-        name: res.name,
-        email: res.email,
-        roles: res.roles,
-      });
-
-      showToast(`Welcome back, ${res.name || 'Admin'}!`, 'success');
-      navigate('/admin/dashboard');
-
-    } catch (error: any) {
-      const msg = error.response?.data?.message || 'Login failed. Please verify admin credentials or ensure the server is running.';
       showToast(msg, 'error');
     } finally {
       setIsLoading(false);
@@ -231,19 +201,6 @@ export const AdminLoginPage: React.FC = () => {
                 Sign In to Admin
               </Button>
             </form>
-
-            {/* Quick Demo Access Button */}
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <Button
-                type="button"
-                variant="outline"
-                size="md"
-                onClick={handleQuickDemoLogin}
-                className="w-full text-xs font-semibold hover:border-primary text-gray-700"
-              >
-                ⚡ 1-Click Admin Login (nadeeja@gmail.com)
-              </Button>
-            </div>
           </div>
 
           {/* Footer Customer Switch */}

@@ -686,7 +686,7 @@ function BurgerScrollExperience() {
             left: 'clamp(16px, 4vw, 64px)',
             right: 'clamp(16px, 4vw, auto)',
             zIndex: 25,
-            maxWidth: 'clamp(290px, calc(100vw - 32px), 560px)',
+            maxWidth: 'clamp(260px, calc(100vw - 32px), 560px)',
             pointerEvents: 'none',
             opacity: showStageOverlay ? 1 : 0,
             transform: showStageOverlay ? 'translateY(0)' : 'translateY(20px)',

@@ -284,43 +284,43 @@ export const MyAccountPage: React.FC = () => {
           </div>
 
           {/* Quick Metrics Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
-            <div className="bg-[#FAFDF7] p-4 rounded-2xl border border-[#E5F0DA]">
-              <div className="flex items-center gap-2 text-[#558B2F] text-xs font-bold">
-                <ShoppingBag className="w-4 h-4" />
-                <span>Total Orders</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-4 sm:pt-6">
+            <div className="bg-[#FAFDF7] p-3 sm:p-4 rounded-2xl border border-[#E5F0DA]">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-[#558B2F] text-[11px] sm:text-xs font-bold">
+                <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">Total Orders</span>
               </div>
-              <p className="text-2xl font-black text-[#1A1A1A] mt-2">
+              <p className="text-xl sm:text-2xl font-black text-[#1A1A1A] mt-1.5 sm:mt-2">
                 {statusCounts.all}
               </p>
             </div>
 
-            <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-200/50">
-              <div className="flex items-center gap-2 text-amber-700 text-xs font-bold">
-                <Flame className="w-4 h-4" />
-                <span>In Kitchen</span>
+            <div className="bg-amber-50/50 p-3 sm:p-4 rounded-2xl border border-amber-200/50">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-amber-700 text-[11px] sm:text-xs font-bold">
+                <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">In Kitchen</span>
               </div>
-              <p className="text-2xl font-black text-amber-900 mt-2">
+              <p className="text-xl sm:text-2xl font-black text-amber-900 mt-1.5 sm:mt-2">
                 {statusCounts.preparing + statusCounts.new}
               </p>
             </div>
 
-            <div className="bg-teal-50/50 p-4 rounded-2xl border border-teal-200/50">
-              <div className="flex items-center gap-2 text-teal-700 text-xs font-bold">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Confirmed</span>
+            <div className="bg-teal-50/50 p-3 sm:p-4 rounded-2xl border border-teal-200/50">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-teal-700 text-[11px] sm:text-xs font-bold">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">Confirmed</span>
               </div>
-              <p className="text-2xl font-black text-teal-900 mt-2">
+              <p className="text-xl sm:text-2xl font-black text-teal-900 mt-1.5 sm:mt-2">
                 {statusCounts.confirmed}
               </p>
             </div>
 
-            <div className="bg-[#E8F3DC]/40 p-4 rounded-2xl border border-[#C5E1A5]/50">
-              <div className="flex items-center gap-2 text-[#558B2F] text-xs font-bold">
-                <PackageCheck className="w-4 h-4" />
-                <span>Delivered</span>
+            <div className="bg-[#E8F3DC]/40 p-3 sm:p-4 rounded-2xl border border-[#C5E1A5]/50">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-[#558B2F] text-[11px] sm:text-xs font-bold">
+                <PackageCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">Delivered</span>
               </div>
-              <p className="text-2xl font-black text-[#558B2F] mt-2">
+              <p className="text-xl sm:text-2xl font-black text-[#558B2F] mt-1.5 sm:mt-2">
                 {statusCounts.delivered}
               </p>
             </div>
@@ -328,20 +328,20 @@ export const MyAccountPage: React.FC = () => {
         </div>
 
         {/* 2. Main View Tabs: My Orders vs. Recent Orders (Delivered) */}
-        <div className="flex items-center gap-3 border-b border-gray-200/80 mb-6 pb-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 border-b border-gray-200/80 mb-6 pb-2">
           <button
             type="button"
             onClick={() => handleMainTabChange('orders')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex-1 sm:flex-initial justify-center ${
               activeMainTab === 'orders'
                 ? 'bg-[#8BC34A] text-white shadow-md shadow-[#8BC34A]/25'
                 : 'bg-white text-gray-600 hover:text-gray-900 border border-gray-200'
             }`}
           >
-            <Clock className="w-4 h-4" />
-            <span>My Orders (History)</span>
+            <Clock className="w-4 h-4 shrink-0" />
+            <span className="truncate">My Orders</span>
             <span
-              className={`text-[11px] font-black px-2 py-0.5 rounded-full ${
+              className={`text-[11px] font-black px-1.5 sm:px-2 py-0.5 rounded-full ${
                 activeMainTab === 'orders'
                   ? 'bg-white text-[#8BC34A]'
                   : 'bg-gray-100 text-gray-700'
@@ -354,16 +354,16 @@ export const MyAccountPage: React.FC = () => {
           <button
             type="button"
             onClick={() => handleMainTabChange('delivered')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex-1 sm:flex-initial justify-center ${
               activeMainTab === 'delivered'
                 ? 'bg-[#8BC34A] text-white shadow-md shadow-[#8BC34A]/25'
                 : 'bg-white text-gray-600 hover:text-gray-900 border border-gray-200'
             }`}
           >
-            <PackageCheck className="w-4 h-4" />
-            <span>Recent Orders (Delivered)</span>
+            <PackageCheck className="w-4 h-4 shrink-0" />
+            <span className="truncate">Delivered</span>
             <span
-              className={`text-[11px] font-black px-2 py-0.5 rounded-full ${
+              className={`text-[11px] font-black px-1.5 sm:px-2 py-0.5 rounded-full ${
                 activeMainTab === 'delivered'
                   ? 'bg-white text-[#8BC34A]'
                   : 'bg-gray-100 text-gray-700'
@@ -377,7 +377,7 @@ export const MyAccountPage: React.FC = () => {
             type="button"
             onClick={fetchMyOrders}
             title="Refresh order history"
-            className="ml-auto w-9 h-9 rounded-full bg-white text-gray-500 hover:text-gray-900 border border-gray-200 flex items-center justify-center transition cursor-pointer"
+            className="sm:ml-auto w-9 h-9 rounded-full bg-white text-gray-500 hover:text-gray-900 border border-gray-200 flex items-center justify-center transition cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>

@@ -371,7 +371,7 @@ export const ProductCustomizationPage: React.FC = () => {
         {product && (
           <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100 animate-in fade-in duration-300">
             {/* Top Soft Green Banner with Centered Circular Dish Image */}
-            <div className="relative h-56 sm:h-64 bg-[#E8F3DC] flex flex-col items-center justify-center p-6 overflow-hidden">
+            <div className="relative h-48 sm:h-64 bg-[#E8F3DC] flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden">
               {/* Decorative Background Glows */}
               <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-[#8BC34A]/20 blur-2xl pointer-events-none" />
               <div className="absolute -bottom-12 -right-12 w-48 h-48 rounded-full bg-[#7CB342]/20 blur-2xl pointer-events-none" />
@@ -384,25 +384,25 @@ export const ProductCustomizationPage: React.FC = () => {
                     'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
                   }
                   alt={product.name}
-                  className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover ring-4 ring-[#8BC34A] shadow-2xl bg-white"
+                  className="w-32 h-32 min-[360px]:w-40 min-[360px]:h-40 sm:w-48 sm:h-48 rounded-full object-cover ring-4 ring-[#8BC34A] shadow-2xl bg-white"
                 />
               </div>
 
               {/* Bottom-left Badge: Customize Your Meal */}
-              <span className="absolute bottom-4 left-6 bg-[#8BC34A] text-white text-xs font-black tracking-wide px-3.5 py-1 rounded-full shadow-md">
+              <span className="absolute bottom-3 left-4 sm:bottom-4 sm:left-6 bg-[#8BC34A] text-white text-[10px] sm:text-xs font-black tracking-wide px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full shadow-md">
                 Customize Your Meal
               </span>
 
               {/* Top-right Category Badge */}
               {product.category && (
-                <span className="absolute top-4 right-6 bg-white/90 backdrop-blur-xs text-[#558B2F] text-xs font-bold px-3 py-1 rounded-full shadow-xs">
+                <span className="absolute top-3 right-4 sm:top-4 sm:right-6 bg-white/90 backdrop-blur-xs text-[#558B2F] text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-xs">
                   {product.category}
                 </span>
               )}
             </div>
 
             {/* Customization Body */}
-            <div className="p-6 sm:p-8 space-y-6">
+            <div className="p-4 sm:p-8 space-y-5 sm:space-y-6">
               {/* Product Title + Description + Live Unit Price */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-gray-100">
                 <div className="max-w-xl">
@@ -600,27 +600,27 @@ export const ProductCustomizationPage: React.FC = () => {
             </div>
 
             {/* Bottom Sticky Action Bar: Quantity + Add Customized Meal CTA */}
-            <div className="sticky bottom-0 z-20 p-4 sm:p-6 bg-white/95 backdrop-blur-md border-t border-gray-100 flex items-center justify-between gap-4 shadow-[0_-10px_25px_rgba(0,0,0,0.03)]">
+            <div className="sticky bottom-0 z-20 p-3 sm:p-6 bg-white/95 backdrop-blur-md border-t border-gray-100 flex items-center justify-between gap-2.5 sm:gap-4 shadow-[0_-10px_25px_rgba(0,0,0,0.03)]">
               {/* Quantity Counter */}
-              <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-full px-3.5 py-2">
+              <div className="flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-3 bg-gray-50 border border-gray-200 rounded-full px-2 sm:px-3.5 py-1.5 sm:py-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-7 h-7 rounded-full bg-white hover:bg-gray-200 text-gray-800 flex items-center justify-center transition cursor-pointer shadow-xs"
+                  className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white hover:bg-gray-200 text-gray-800 flex items-center justify-center transition cursor-pointer shadow-xs"
                   aria-label="Decrease quantity"
                 >
-                  <Minus className="w-3.5 h-3.5" />
+                  <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </button>
-                <span className="text-sm font-black w-5 text-center">
+                <span className="text-xs sm:text-sm font-black w-4 sm:w-5 text-center">
                   {quantity}
                 </span>
                 <button
                   type="button"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-7 h-7 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white flex items-center justify-center transition cursor-pointer shadow-xs"
+                  className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] text-white flex items-center justify-center transition cursor-pointer shadow-xs"
                   aria-label="Increase quantity"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </button>
               </div>
 
@@ -629,12 +629,12 @@ export const ProductCustomizationPage: React.FC = () => {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isAddedSuccess}
-                className="flex-1 py-3.5 px-6 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] active:scale-[0.99] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-[#8BC34A]/30 transition flex items-center justify-between cursor-pointer disabled:opacity-80"
+                className="flex-1 min-w-0 py-3 sm:py-3.5 px-3 sm:px-6 rounded-full bg-[#8BC34A] hover:bg-[#7CB342] active:scale-[0.99] text-white font-extrabold text-xs sm:text-base shadow-lg shadow-[#8BC34A]/30 transition flex items-center justify-between cursor-pointer disabled:opacity-80 gap-1.5"
               >
-                <span>
-                  {isAddedSuccess ? '✓ Added to Food Bag' : 'Add Customized Meal'}
+                <span className="truncate">
+                  {isAddedSuccess ? '✓ Added to Bag' : 'Add Customized Meal'}
                 </span>
-                <span className="bg-white/20 backdrop-blur-xs px-3.5 py-1 rounded-full font-black text-sm sm:text-base ml-2">
+                <span className="bg-white/20 backdrop-blur-xs px-2 sm:px-3.5 py-0.5 sm:py-1 rounded-full font-black text-xs sm:text-base shrink-0">
                   ${totalPrice.toFixed(2)}
                 </span>
               </button>

@@ -382,17 +382,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </p>
 
           {/* Two Buttons: Order Now & Explore More */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
             <button
               onClick={() => navigate('/menu')}
-              className="px-8 py-3.5 rounded-full bg-[#7CB342] hover:bg-[#689F38] text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
+              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#7CB342] hover:bg-[#689F38] text-white font-bold text-xs sm:text-base shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
             >
               Order Now
             </button>
 
             <button
               onClick={() => navigate('/menu')}
-              className="px-7 py-3.5 rounded-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold text-sm sm:text-base transition-all duration-200 flex items-center gap-2 cursor-pointer"
+              className="px-5 sm:px-7 py-3 sm:py-3.5 rounded-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold text-xs sm:text-base transition-all duration-200 flex items-center gap-2 cursor-pointer"
             >
               Explore More <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
@@ -423,10 +423,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div
           onMouseEnter={handleRequestNextBatch}
           onTouchStart={handleRequestNextBatch}
-          className="lg:col-span-6 flex justify-center items-center relative min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] py-4 select-none"
+          className="lg:col-span-6 flex justify-center items-center relative min-h-[380px] sm:min-h-[500px] lg:min-h-[580px] py-4 select-none overflow-hidden sm:overflow-visible"
         >
           {/* Main Orbit Arena Container: Scales responsively across mobile, tablet, and desktop */}
-          <div className="relative flex items-center justify-center w-[330px] h-[330px] sm:w-[410px] sm:h-[410px] md:w-[450px] md:h-[450px] lg:w-[490px] lg:h-[490px] xl:w-[520px] xl:h-[520px]">
+          <div className="relative flex items-center justify-center w-[280px] h-[280px] min-[360px]:w-[320px] min-[360px]:h-[320px] sm:w-[410px] sm:h-[410px] md:w-[450px] md:h-[450px] lg:w-[490px] lg:h-[490px] xl:w-[520px] xl:h-[520px]">
             
             {/* 1. THIN DASHED WHITE BORDER (Radar / Orbit Circle) */}
             <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/70 pointer-events-none shadow-xs" />
@@ -434,31 +434,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             {/* 2. FLOATING VEGGIE / GARNISH CUTOUTS (Gentle Bobbing) */}
             <div className="absolute inset-0 pointer-events-none z-15 flex items-center justify-center overflow-visible">
               <div
-                className="absolute -translate-x-24 -translate-y-40 sm:-translate-x-28 sm:-translate-y-48 animate-zero-gravity"
+                className="absolute -translate-x-20 -translate-y-32 sm:-translate-x-28 sm:-translate-y-48 animate-zero-gravity"
                 style={{ animationDelay: '0.4s' }}
               >
                 <DicedTomatoBits />
               </div>
 
               <div
-                className="absolute -translate-x-10 -translate-y-36 sm:-translate-x-12 sm:-translate-y-44 animate-zero-gravity"
+                className="absolute -translate-x-8 -translate-y-28 sm:-translate-x-12 sm:-translate-y-44 animate-zero-gravity"
                 style={{ animationDelay: '1.2s' }}
               >
-                <BitterGourdSlice size={44} rotation={-15} />
+                <BitterGourdSlice size={36} rotation={-15} className="sm:w-[52px] sm:h-[52px]" />
               </div>
 
               <div
-                className="absolute translate-x-24 -translate-y-40 sm:translate-x-28 sm:-translate-y-48 animate-zero-gravity"
+                className="absolute translate-x-20 -translate-y-32 sm:translate-x-28 sm:-translate-y-48 animate-zero-gravity"
                 style={{ animationDelay: '0.8s' }}
               >
-                <TomatoWedge size={42} rotation={22} />
+                <TomatoWedge size={36} rotation={22} className="sm:w-[48px] sm:h-[48px]" />
               </div>
 
               <div
-                className="absolute translate-x-40 -translate-y-30 sm:translate-x-46 sm:-translate-y-36 animate-zero-gravity"
+                className="absolute translate-x-32 -translate-y-24 sm:translate-x-46 sm:-translate-y-36 animate-zero-gravity"
                 style={{ animationDelay: '1.8s' }}
               >
-                <BitterGourdSlice size={46} rotation={38} />
+                <BitterGourdSlice size={38} rotation={38} className="sm:w-[52px] sm:h-[52px]" />
               </div>
             </div>
 
@@ -466,7 +466,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="relative z-10 flex flex-col items-center">
               <div
                 key={`main-hero-dish-${animKey}-${activeDish?.id}`}
-                className="relative w-[230px] h-[230px] sm:w-[290px] sm:h-[290px] md:w-[320px] md:h-[320px] lg:w-[350px] lg:h-[350px] xl:w-[380px] xl:h-[380px] rounded-full p-3.5 sm:p-5 lg:p-6 bg-[#A4D670] shadow-[0_20px_50px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-500 group animate-dish-float-in"
+                className="relative w-[190px] h-[190px] min-[360px]:w-[220px] min-[360px]:h-[220px] sm:w-[290px] sm:h-[290px] md:w-[320px] md:h-[320px] lg:w-[350px] lg:h-[350px] xl:w-[380px] xl:h-[380px] rounded-full p-2.5 sm:p-5 lg:p-6 bg-[#A4D670] shadow-[0_20px_50px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-500 group animate-dish-float-in"
               >
                 {displayedMainImage && !imageErrorMap[activeDish?.id || ''] ? (
                   <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-inner">
@@ -571,8 +571,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     top: pos.top,
                   }}
                   title={`Select "${mini.name}" ($${Number(mini.price).toFixed(2)})`}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-15 sm:h-15 lg:w-[68px] lg:h-[68px] rounded-full p-1 sm:p-1.5 bg-white shadow-[0_8px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.22)] border border-gray-100 hover:scale-115 active:scale-95 transition-all duration-300 cursor-pointer ${pos.animClass} ${
-                    isCurrent ? 'ring-3 sm:ring-4 ring-[#7CB342] ring-offset-2 scale-110 shadow-2xl' : ''
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 w-10 h-10 min-[360px]:w-12 min-[360px]:h-12 sm:w-15 sm:h-15 lg:w-[68px] lg:h-[68px] rounded-full p-0.5 sm:p-1.5 bg-white shadow-[0_8px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.22)] border border-gray-100 hover:scale-115 active:scale-95 transition-all duration-300 cursor-pointer ${pos.animClass} ${
+                    isCurrent ? 'ring-2 sm:ring-4 ring-[#7CB342] ring-offset-2 scale-110 shadow-2xl' : ''
                   }`}
                 >
                   <img

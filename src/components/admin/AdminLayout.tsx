@@ -14,7 +14,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   children,
   title,
   subtitle,
-  newOrdersCount = 2,
+  newOrdersCount = 0,
 }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
