@@ -1,0 +1,62 @@
+[
+  {
+    "filename": "hero-culinary-bg.jpg",
+    "url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80",
+    "title": "Culinary Table Atmosphere",
+    "author": "Lily Banse / Unsplash"
+  },
+  {
+    "filename": "chef-crafting-dish.jpg",
+    "url": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1200&q=80",
+    "title": "Professional Chef Plating Gourmet Dish",
+    "author": "Fabrizio Manno / Unsplash"
+  },
+  {
+    "filename": "chef-kitchen-action.jpg",
+    "url": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80",
+    "title": "Chefs Working in Modern Restaurant Kitchen",
+    "author": "Jason Leung / Unsplash"
+  },
+  {
+    "filename": "chef-dough-prep.jpg",
+    "url": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1200&q=80",
+    "title": "Handcrafting Pizza Dough",
+    "author": "Maja Petric / Unsplash"
+  },
+  {
+    "filename": "fresh-organic-ingredients.jpg",
+    "url": "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=1200&q=80",
+    "title": "Fresh Farm Ingredients & Heirloom Vegetables",
+    "author": "Chantal Garnier / Unsplash"
+  },
+  {
+    "filename": "fresh-herbs-harvest.jpg",
+    "url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80",
+    "title": "Fresh Garden Greens and Basil",
+    "author": "Anna Pelzer / Unsplash"
+  },
+  {
+    "filename": "artisan-woodfired-pizza.jpg",
+    "url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+    "title": "Authentic Woodfired Pizza with Buffalo Mozzarella",
+    "author": "Aurélien Lemasson-Théobald / Unsplash"
+  },
+  {
+    "filename": "gourmet-truffle-burger.jpg",
+    "url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80",
+    "title": "Prime Artisan Beef Burger",
+    "author": "Amirali Mirhashemian / Unsplash"
+  },
+  {
+    "filename": "food-experience-cinematic.jpg",
+    "url": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80",
+    "title": "Interactive Burger Assembly Experience",
+    "author": "Robin Stickel / Unsplash"
+  },
+  {
+    "filename": "restaurant-dining-ambiance.jpg",
+    "url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+    "title": "Warm Restaurant Atmosphere & Dining Table",
+    "author": "Jay Wennington / Unsplash"
+  }
+]

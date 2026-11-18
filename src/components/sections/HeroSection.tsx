@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Utensils, Sliders, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Utensils, Sliders, Play, Loader2, Sparkles } from 'lucide-react';
 import { HeroDish, MenuItem } from '../../types';
 import { adminProductApi, AdminProduct } from '../../services/adminApi';
 
@@ -373,7 +373,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Large Bold Heading */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-black tracking-tight leading-[1.08] text-[#111111] font-display">
             JUST COME TO <br />
-            FOODIED &amp; ORDER
+            <span className="text-[#689F38]">FOODIED &amp; ORDER</span>
+            
           </h1>
 
           {/* Short Description */}
@@ -381,20 +382,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             Here You Will Find All The Best Quality And Pure Food. Order Now To Satisfy Your Hunger Pangs
           </p>
 
-          {/* Two Buttons: Order Now & Explore More */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
+          {/* Two Prominent Action Buttons */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1">
             <button
               onClick={() => navigate('/menu')}
-              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#7CB342] hover:bg-[#689F38] text-white font-bold text-xs sm:text-base shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
+              className="px-7 sm:px-9 py-3.5 sm:py-4 rounded-full bg-[#7CB342] hover:bg-[#689F38] text-white font-bold text-xs sm:text-base shadow-lg hover:shadow-xl shadow-[#7CB342]/25 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2.5 group"
             >
-              Order Now
+              <span>Order Now</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.5] group-hover:translate-x-1 transition-transform" />
             </button>
 
             <button
-              onClick={() => navigate('/menu')}
-              className="px-5 sm:px-7 py-3 sm:py-3.5 rounded-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold text-xs sm:text-base transition-all duration-200 flex items-center gap-2 cursor-pointer"
+              onClick={() => navigate('/experience')}
+              className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-white/90 hover:bg-gray-900 border-2 border-gray-900 text-gray-900 hover:text-white font-bold text-xs sm:text-base transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-xs hover:shadow-md"
             >
-              Explore More <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              <Play className="w-4 h-4 fill-current text-[#7CB342]" />
+              <span>Explore Experience</span>
             </button>
           </div>
 
@@ -427,7 +430,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         >
           {/* Main Orbit Arena Container: Scales responsively across mobile, tablet, and desktop */}
           <div className="relative flex items-center justify-center w-[280px] h-[280px] min-[360px]:w-[320px] min-[360px]:h-[320px] sm:w-[410px] sm:h-[410px] md:w-[450px] md:h-[450px] lg:w-[490px] lg:h-[490px] xl:w-[520px] xl:h-[520px]">
-            
+
             {/* 1. THIN DASHED WHITE BORDER (Radar / Orbit Circle) */}
             <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/70 pointer-events-none shadow-xs" />
 
@@ -492,9 +495,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                           navigate('/menu');
                         }
                       }}
-                      className={`w-full h-full object-cover rounded-full select-none cursor-pointer transition-transform duration-500 group-hover:scale-105 ${
-                        isMainImagePreloading ? 'opacity-70 filter blur-xs' : 'opacity-100'
-                      }`}
+                      className={`w-full h-full object-cover rounded-full select-none cursor-pointer transition-transform duration-500 group-hover:scale-105 ${isMainImagePreloading ? 'opacity-70 filter blur-xs' : 'opacity-100'
+                        }`}
                     />
 
                     {/* Preloading spinner overlay */}
@@ -571,9 +573,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     top: pos.top,
                   }}
                   title={`Select "${mini.name}" ($${Number(mini.price).toFixed(2)})`}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 w-10 h-10 min-[360px]:w-12 min-[360px]:h-12 sm:w-15 sm:h-15 lg:w-[68px] lg:h-[68px] rounded-full p-0.5 sm:p-1.5 bg-white shadow-[0_8px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.22)] border border-gray-100 hover:scale-115 active:scale-95 transition-all duration-300 cursor-pointer ${pos.animClass} ${
-                    isCurrent ? 'ring-2 sm:ring-4 ring-[#7CB342] ring-offset-2 scale-110 shadow-2xl' : ''
-                  }`}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 w-10 h-10 min-[360px]:w-12 min-[360px]:h-12 sm:w-15 sm:h-15 lg:w-[68px] lg:h-[68px] rounded-full p-0.5 sm:p-1.5 bg-white shadow-[0_8px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.22)] border border-gray-100 hover:scale-115 active:scale-95 transition-all duration-300 cursor-pointer ${pos.animClass} ${isCurrent ? 'ring-2 sm:ring-4 ring-[#7CB342] ring-offset-2 scale-110 shadow-2xl' : ''
+                    }`}
                 >
                   <img
                     src={mini.image}

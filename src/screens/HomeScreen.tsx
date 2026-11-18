@@ -1,13 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MenuItem, HeroDish, Chef, FloatingClone, User } from '../types';
+import { MenuItem, HeroDish, FloatingClone, User } from '../types';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { FloatingDishClone, StoreToast } from '../components/StoreOverlays';
-import { HeroSection } from '../components/sections/HeroSection';
-import { FeaturedSection } from '../components/sections/FeaturedSection';
-import { WhyChooseUsSection } from '../components/sections/WhyChooseUsSection';
-import { ChefsSection } from '../components/sections/ChefsSection';
+import {
+  HeroSection,
+  ChefsSection,
+  FeaturedSection,
+  FreshIngredientsSection,
+  FoodExperienceSection,
+  WhyChooseUsSection,
+  BrandStorySection
+} from '../components/sections';
 import { adminProductApi, AdminProduct } from '../services/adminApi';
 import useAuth from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
@@ -15,18 +20,16 @@ import { useCart } from '../context/CartContext';
 export interface HomeScreenProps {
   initialMenuItems?: MenuItem[];
   initialHeroDishes?: HeroDish[];
-  initialChefs?: Chef[];
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
   initialMenuItems = [],
   initialHeroDishes = [],
-  initialChefs = []
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuth();
-  const { addToCart, cartTotalCount } = useCart();
+  const { cartTotalCount } = useCart();
 
   // Smooth scroll to Contact section if landing with hash
   useEffect(() => {
@@ -41,11 +44,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   }, [location.hash, location.pathname]);
 
   // Application Data States
-  const [menuItems] = useState<MenuItem[]>(initialMenuItems);
   const [backendProducts, setBackendProducts] = useState<AdminProduct[]>([]);
   const [heroDishes, setHeroDishes] = useState<HeroDish[]>(initialHeroDishes);
   const [activeHeroDish, setActiveHeroDish] = useState<HeroDish | null>(null);
-  const [chefs] = useState<Chef[]>(initialChefs);
 
   // Fetch available products from backend MongoDB API
   useEffect(() => {
@@ -83,8 +84,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [heroAnimKey, setHeroAnimKey] = useState(1);
   const [floatStartVector, setFloatStartVector] = useState({ x: 160, y: 120, rot: -22 });
   const [isAutoFloating, setIsAutoFloating] = useState(false);
-  const [floatingClone, setFloatingClone] = useState<FloatingClone | null>(null);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [floatingClone] = useState<FloatingClone | null>(null);
 
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,7 +112,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       id: dish.id,
       name: dish.name,
       price: Number(dish.price),
-      calories: 'calories' in dish ? dish.calories : '390 kcal',
+      calories: 'calories' in dish ? dish.calories : '15-20 min',
       image: dish.image,
       desc: 'desc' in dish ? dish.desc : dish.description || ''
     });
@@ -153,12 +153,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   // Navigate to Dedicated Product Customization Page on "Buy Now"
-  const openCustomerCustomizer = (item: MenuItem, e?: React.MouseEvent<HTMLElement>) => {
-    if (e && e.currentTarget) {
-      setSelectedCardId(item.id);
-      setTimeout(() => setSelectedCardId(null), 700);
-    }
-    // Navigate directly to dedicated customization page
+  const openCustomerCustomizer = (item: MenuItem) => {
     navigate(`/customize/${item.id}`, { state: { product: item } });
   };
 
@@ -170,20 +165,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     showToast('You have been logged out.');
   };
 
-  // Filtered featured items
-  const featuredItems = useMemo(
-    () =>
-      menuItems
-        .filter((i) => i.section === 'featured')
-        .filter((i) => i.name.toLowerCase().includes(searchQuery.toLowerCase())),
-    [menuItems, searchQuery]
-  );
-
   return (
     <div className="min-h-screen bg-[#FAFDF7] text-[#1A1A1A] font-sans relative overflow-x-hidden selection:bg-[#8BC34A] selection:text-white">
       <FloatingDishClone clone={floatingClone} />
 
-      {/* Top Organic Green Background Curve with lime/olive gradient tones matching reference */}
+      {/* Top Organic Green Background Curve with lime/olive gradient tones */}
       <svg
         className="block absolute top-0 right-0 w-[96%] sm:w-[86%] md:w-[72%] lg:w-[62%] xl:w-[58%] h-[560px] sm:h-[660px] lg:h-[760px] pointer-events-none z-0 overflow-visible transition-all duration-500"
         viewBox="0 0 850 760"
@@ -205,6 +191,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       <StoreToast message={toastMessage} />
 
+      {/* 1. Header Navigation */}
       <Header
         searchQuery={searchQuery}
         isSearchOpen={isSearchOpen}
@@ -217,29 +204,45 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         onAuthNavigate={() => navigate('/login')}
       />
 
-      <HeroSection
-        activeHeroDish={activeHeroDish}
-        heroDishes={heroDishes}
-        heroAnimKey={heroAnimKey}
-        floatStartVector={floatStartVector}
-        isAutoFloating={isAutoFloating}
-        onToggleAutoFloat={() => setIsAutoFloating(!isAutoFloating)}
-        onReplayFloat={() => activeHeroDish && triggerHeroDishFloat(activeHeroDish, 165, 135, -24)}
-        onSelectHeroDish={(dish, x, y, rot) => triggerHeroDishFloat(dish, x, y, rot)}
-        onCustomizeDish={openCustomerCustomizer}
-        backendProducts={backendProducts}
-      />
+      <main>
+        {/* 2. Enhanced Hero Section */}
+        <HeroSection
+          activeHeroDish={activeHeroDish}
+          heroDishes={heroDishes}
+          heroAnimKey={heroAnimKey}
+          floatStartVector={floatStartVector}
+          isAutoFloating={isAutoFloating}
+          onToggleAutoFloat={() => setIsAutoFloating(!isAutoFloating)}
+          onReplayFloat={() => activeHeroDish && triggerHeroDishFloat(activeHeroDish, 165, 135, -24)}
+          onSelectHeroDish={(dish, x, y, rot) => triggerHeroDishFloat(dish, x, y, rot)}
+          onCustomizeDish={openCustomerCustomizer}
+          backendProducts={backendProducts}
+        />
 
-      <FeaturedSection
-        featuredItems={featuredItems}
-        selectedCardId={selectedCardId}
-        onCustomizeDish={openCustomerCustomizer}
-      />
+        {/* 3. Special Chef Section: "Crafted With Passion - Meet the Art Behind Every Bite" */}
+        <ChefsSection />
 
-      <WhyChooseUsSection />
+        {/* 4. Featured Favorites: Real Backend Dishes with Customization & Quick Order */}
+        <FeaturedSection
+          products={backendProducts}
+          onCustomizeDish={openCustomerCustomizer}
+          onToast={showToast}
+        />
 
-      <ChefsSection chefs={chefs} />
+        {/* 5. Fresh Ingredients: "Freshness You Can Taste" Farm-to-Table Story */}
+        <FreshIngredientsSection />
 
+        {/* 6. Our Food Experience: Cinematic 250-Frame Interactive Prep Visualizer Banner */}
+        <FoodExperienceSection />
+
+        {/* 7. Why Choose Foodied: 4 Authentic Core Capabilities */}
+        <WhyChooseUsSection />
+
+        {/* 8. Brand Story: Culinary Philosophy & Kitchen Craft */}
+        <BrandStorySection />
+      </main>
+
+      {/* 9. Footer with Unsplash Attributions & Navigation */}
       <Footer
         onToast={showToast}
         onNewsletterSubscribe={() => showToast('Thank you for subscribing to our newsletter!')}

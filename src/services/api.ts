@@ -9,7 +9,8 @@ const PUBLIC_ENDPOINTS = [
   "/auth/admin/login",
   "/auth/register",
   "/auth/google",
-  "/auth/refresh"
+  "/auth/refresh",
+  "/chat"
 ];
 
 api.interceptors.request.use((config) => {

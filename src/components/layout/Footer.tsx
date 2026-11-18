@@ -128,6 +128,14 @@ export const Footer: React.FC<FooterProps> = ({ onToast, onNewsletterSubscribe }
           </form>
         </div>
       </div>
+
+      {/* Bottom Bar: Copyright & Unsplash Photography Attributions */}
+      <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-[#C5E1A5]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <p>&copy; {new Date().getFullYear()} Foodied Inc. All rights reserved. Artisan food crafted with care.</p>
+        <p className="text-[11px] text-gray-500 text-center sm:text-right">
+          Culinary photography courtesy of contributors on Unsplash (Fabrizio Manno, Jason Leung, Lily Banse, Maja Petric, Chantal Garnier, Anna Pelzer, Aurélien Lemasson-Théobald, Amirali Mirhashemian, Robin Stickel, Jay Wennington).
+        </p>
+      </div>
     </footer>
   );
 };

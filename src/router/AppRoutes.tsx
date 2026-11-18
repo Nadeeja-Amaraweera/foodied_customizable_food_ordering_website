@@ -8,6 +8,7 @@ import { MyAccountPage } from "../pages/MyAccountPage";
 import { ProductCustomizationPage } from "../pages/ProductCustomizationPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import { PizzaChatbot } from "../components/chat/PizzaChatbot";
 import useAuth from "../hooks/useAuth";
 
 // Admin Pages
@@ -206,6 +207,9 @@ function Router() {
         {/* Catch-all redirect to Admin Dashboard or Home */}
         <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>
+
+      {/* Floating AI Food Assistant Chatbot (Active on customer pages, hidden on admin) */}
+      <PizzaChatbot />
     </BrowserRouter>
   );
 }
