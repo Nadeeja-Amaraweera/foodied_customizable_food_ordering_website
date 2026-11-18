@@ -5,5 +5,4 @@ export { FoodExperienceSection } from './FoodExperienceSection';
 export { ChefsSection } from './ChefsSection';
 export { WhyChooseUsSection } from './WhyChooseUsSection';
 export { BrandStorySection } from './BrandStorySection';
-export { SpecialMenuSection } from './SpecialMenuSection';
 export { RegularFoodSection } from './RegularFoodSection';
